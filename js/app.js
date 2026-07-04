@@ -25,6 +25,7 @@
       document.getElementById("summary-cards"),
       data
     );
+    window.SQLab.Heatmap.render(document.getElementById("heatmap-section"), data);
   }
 
   function showIntro() {
@@ -54,13 +55,14 @@
     document.documentElement.lang = lang;
     window.SQLab.applyStaticI18n(document);
     updateLangButton();
-    // 現在表示中のエラーやサマリーも再描画して言語を反映する
+    // 現在表示中のエラーやサマリー/ヒートマップも再描画して言語を反映する
     if (lastData) {
       window.SQLab.Summary.render(
         document.getElementById("match-info"),
         document.getElementById("summary-cards"),
         lastData
       );
+      window.SQLab.Heatmap.render(document.getElementById("heatmap-section"), lastData);
     }
   }
 
