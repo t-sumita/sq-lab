@@ -1,0 +1,6 @@
+# OS/エディタ
+Thumbs.db
+.DS_Store
+*.swp
+.vscode/
+.idea/

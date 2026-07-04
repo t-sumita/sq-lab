@@ -1,0 +1,291 @@
+/* sq-lab — モバイルファースト、ビルドステップなし、外部フォント/CDN依存なし。 */
+
+:root {
+  --color-bg: #ffffff;
+  --color-text: #1a1a1a;
+  --color-muted: #666666;
+  --color-border: #dddddd;
+  --color-accent: #2b6cb0;
+  --color-p1: #c53030;
+  --color-p1-bg: #fff5f5;
+  --color-p2: #2b6cb0;
+  --color-p2-bg: #ebf8ff;
+  --radius: 8px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* [hidden] は .panel { display: flex } 等の同specificityなクラス指定に
+   後勝ちで上書きされてしまうため、明示的に最優先で無効化する。 */
+[hidden] {
+  display: none !important;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans",
+    "Yu Gothic", Arial, sans-serif;
+  color: var(--color-text);
+  background: var(--color-bg);
+  line-height: 1.5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- ヘッダー / フッター ---- */
+
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.site-header__brand {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.site-header__name {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.site-header__version {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+.lang-toggle {
+  font-size: 0.85rem;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  cursor: pointer;
+}
+
+.site-footer {
+  margin-top: auto;
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  border-top: 1px solid var(--color-border);
+}
+
+/* ---- メイン ---- */
+
+main {
+  flex: 1;
+  padding: 1rem;
+  max-width: 720px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.notice {
+  padding: 0.6rem 0.8rem;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+}
+
+.notice--info {
+  background: #f0f7ff;
+  color: #234e70;
+}
+
+.notice--muted {
+  background: #f7f7f7;
+  color: var(--color-muted);
+}
+
+.drop-zone {
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius);
+  padding: 2rem 1rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.drop-zone--active {
+  border-color: var(--color-accent);
+  background: #f0f7ff;
+}
+
+.demo-row {
+  display: flex;
+  justify-content: center;
+}
+
+.btn {
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-accent);
+  background: var(--color-accent);
+  color: #fff;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.btn--secondary {
+  background: #fff;
+  color: var(--color-accent);
+}
+
+.error-box {
+  padding: 0.6rem 0.8rem;
+  border-radius: var(--radius);
+  background: #fff5f5;
+  color: #c53030;
+  border: 1px solid #feb2b2;
+  font-size: 0.9rem;
+}
+
+/* ---- 試合情報 ---- */
+
+.match-info__title {
+  font-size: 1rem;
+  margin: 0 0 0.5rem;
+}
+
+.match-info__list {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.25rem 0.75rem;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.match-info__list dt {
+  color: var(--color-muted);
+}
+
+.match-info__list dd {
+  margin: 0;
+  word-break: break-word;
+}
+
+/* ---- サマリーカード ---- */
+
+.summary-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.player-card {
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+  padding: 1rem;
+}
+
+.player-card--red {
+  background: var(--color-p1-bg);
+  border-color: var(--color-p1);
+}
+
+.player-card--blue {
+  background: var(--color-p2-bg);
+  border-color: var(--color-p2);
+}
+
+.player-card__header {
+  margin-bottom: 0.75rem;
+}
+
+.player-card__name {
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.player-card--red .player-card__name {
+  color: var(--color-p1);
+}
+
+.player-card--blue .player-card__name {
+  color: var(--color-p2);
+}
+
+.player-card__metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.metric__label {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.metric__value {
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.metric__note {
+  margin: 0.35rem 0 0;
+  font-size: 0.7rem;
+  color: var(--color-muted);
+  grid-column: 1 / -1;
+}
+
+/* ---- 小画面(375px相当)でも崩れないための調整 ---- */
+
+@media (max-width: 400px) {
+  .site-header__name {
+    font-size: 1rem;
+  }
+
+  .drop-zone {
+    padding: 1.5rem 0.75rem;
+  }
+
+  .player-card__metrics {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .metric__value {
+    font-size: 1rem;
+  }
+}
+
+/* ---- 広い画面ではサマリーカードを横並びに ---- */
+
+@media (min-width: 640px) {
+  .summary-cards {
+    flex-direction: row;
+  }
+
+  .player-card {
+    flex: 1;
+  }
+}
