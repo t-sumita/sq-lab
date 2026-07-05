@@ -54,17 +54,25 @@ body {
   background: var(--color-bg);
 }
 
+/* v0.6.1: ヘッダーの縦を圧縮(mnym相当の高さ感に)。ⓘ/LANGは position:fixed
+   化したため、その分の右側スペースを確保する padding-right を付ける。 */
 .site-header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.75rem 1rem;
+  align-items: baseline;
+  padding: 0.6rem 96px 0.6rem 1rem;
   border-bottom: 1px solid var(--color-border);
   max-width: var(--content-max-width);
   width: 100%;
   margin: 0 auto;
-  gap: 0.75rem;
+}
+
+/* タイトル+タグラインの並び(mnymの.title-groupを移植)。狭幅では折返す。 */
+.site-header__title-group {
+  display: flex;
+  align-items: baseline;
   flex-wrap: wrap;
+  gap: 0.2rem 1rem;
+  min-width: 0;
 }
 
 .site-header__brand {
@@ -99,22 +107,30 @@ body {
   -webkit-text-fill-color: var(--color-accent);
 }
 
+/* v0.6.1: タイトルの右側に横並び表示(mnymの「資産ミックス+右横説明」と同じ並び)。
+   従来のflex-basis:100%(常に折返し)をやめ、幅が足りない時だけ自然に折返す。 */
 .site-header__tagline {
   margin: 0;
   color: var(--color-muted);
   font-size: 0.8rem;
-  flex-basis: 100%;
 }
 
-.site-header__version {
-  font-size: 0.75rem;
-  color: var(--color-muted);
-}
-
+/* v0.6.1: ⓘ/LANGはヘッダー内スクロール追従ではなく、バッジ(左下)・
+   footer-right(右下)と同じ「viewport固定レイヤー」の流儀でviewport右上に固定する。
+   任意のスクロール済みコンテンツの上でも読めるよう、小さな背景カードにする。 */
 .site-header__actions {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 8999; /* バッジ/バッジパネル(9999)より下 */
   display: flex;
   align-items: center;
   gap: 0.6rem;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 0.25rem 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .site-header__info {
@@ -130,6 +146,22 @@ body {
   border-radius: var(--radius);
   background: var(--color-bg);
   cursor: pointer;
+}
+
+/* v0.6.1: バージョン表示は左下バッジの©表記の右隣に集約する(mnymの
+   「© 2026 Subutomo Dev (v1.0.5)」と同形式。バッジ本体(共有アセット)は
+   改変せず、js側でバッジ内へspanを追記する方式——mnymの injectFooterVersion
+   と同じ手法をplain scriptで移植)。 */
+.su-badge .footer-ver {
+  font-family: monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--color-muted);
+  opacity: 0.85;
+}
+
+.su-badge .footer-ver::after {
+  content: none; /* バッジ本体のspanに付く下線アニメを版表示には出さない */
 }
 
 /* 右下固定クラスタ(mnymの.footer-rightを移植)。中央フッターは廃止
@@ -816,6 +848,22 @@ body.body--drag-active {
 @media (max-width: 400px) {
   .site-header__name {
     font-size: 1rem;
+  }
+
+  /* v0.6.1: 狭幅ではタグラインを独立した下段行に折返す(タイトルとの横並びは
+     維持できないため。mnymも480px以下で同様にflex-basis:100%へ切替える)。 */
+  .site-header__tagline {
+    flex-basis: 100%;
+    font-size: 0.7rem;
+  }
+
+  .site-header {
+    padding-right: 80px;
+  }
+
+  .site-header__actions {
+    top: 10px;
+    right: 8px;
   }
 
   .drop-zone {

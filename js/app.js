@@ -96,8 +96,6 @@
     var initialLang = window.SQLab.getLang();
     applyLanguage(initialLang);
 
-    document.getElementById("app-version").textContent = "v" + window.SQLab.APP_VERSION;
-
     var fileInput = document.getElementById("file-input");
     var chooseBtn = document.getElementById("choose-file-btn");
     var langToggle = document.getElementById("lang-toggle");

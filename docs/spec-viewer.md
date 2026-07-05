@@ -206,3 +206,25 @@ subu-mnym(mnym.subutomo.dev のソース)を正の参照実装として、ヘッ
   短いラベル+ⓘを追加。速度/トレイルボタンの選択色が`.replay__btn`の
   `background:#fff`にカスケード順で打ち消されていた不具合を
   `.replay__btn.tab-btn--active`の追加で修正
+
+## 画面構成(v0.6.1: ヘッダー/フッター微修正・ファビコン)
+
+- **ⓘ/LANG**: ヘッダー内スクロール追従ではなく`.site-header__actions`を
+  `position:fixed; top:12px; right:12px`にし、バッジ(左下)・footer-right
+  (右下)と同じ「viewport固定レイヤー」の流儀に統一。`.site-header`側は
+  `padding-right`でこの固定領域とのオーバーラップを避ける余白を確保する
+- **バージョン表示**: ヘッダーのタイトル横から撤去し、左下バッジの
+  コピーライト表記の右隣へ`(v0.6.1)`形式で追記する方式に変更。
+  バッジ本体(`assets/subutomo-badge.js`、共有アセット)は改変せず、
+  index.html/guide.html側のインラインスクリプトが`.su-badge`へ
+  `.footer-ver`のspanを追記する(subu-mnymの`injectFooterVersion`と
+  同じ手法。ただし`type="module"`はfile://でCORSブロックされるため、
+  plain scriptで`window.SQLab.APP_VERSION`を直接参照する形に変更した)
+- **タグライン**: `flex-basis:100%`(常に強制改行)をやめ、
+  `.site-header__title-group`内でタイトルと横並びにした
+  (幅が足りない狭幅のみ自然に折返す)。これにより不要な2行目が消え、
+  ヘッダーの縦幅も自然に圧縮された
+- **ヘッダーpadding**: 上下`0.75rem`→`0.6rem`に圧縮
+- **ファビコン**: `subutomo-template/assets/favicon.{svg,-32.png,-180.png}`
+  をそのままコピーし、標準的な3行の`<link>`タグで導入(共有アセットの
+  ため改変なし)

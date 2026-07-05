@@ -4,22 +4,27 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Guide — Squash Laboratory</title>
-<link rel="stylesheet" href="css/style.css?v=0.6.0">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="apple-touch-icon" href="assets/favicon-180.png">
+<link rel="stylesheet" href="css/style.css?v=0.6.1">
 </head>
 <body>
 
 <div class="sticky-top">
 <header class="site-header">
-  <a class="site-header__brand" href="index.html">
-    <img class="site-header__logo" src="assets/subu-pic-header.png" alt=""
-         onerror="this.style.display='none'">
-    <span class="site-header__name">Squash Laboratory</span>
-  </a>
-  <p class="site-header__tagline" data-i18n="headerTagline"></p>
-  <div class="site-header__actions">
-    <button id="lang-toggle" class="lang-toggle" type="button">EN</button>
+  <div class="site-header__title-group">
+    <a class="site-header__brand" href="index.html">
+      <img class="site-header__logo" src="assets/subu-pic-header.png" alt=""
+           onerror="this.style.display='none'">
+      <span class="site-header__name">Squash Laboratory</span>
+    </a>
+    <p class="site-header__tagline" data-i18n="headerTagline"></p>
   </div>
 </header>
+</div>
+<div class="site-header__actions">
+  <button id="lang-toggle" class="lang-toggle" type="button">EN</button>
 </div>
 
 <main id="main" class="guide">
@@ -187,9 +192,31 @@
     onSecretAction: null
   };
 </script>
-<script src="./assets/subutomo-badge.js?v=0.6.0"></script>
+<script src="./assets/subutomo-badge.js?v=0.6.1"></script>
 
-<script src="js/i18n.js?v=0.6.0"></script>
+<script src="js/config.js?v=0.6.1"></script>
+<script>
+  // v0.6.1: index.htmlと同じくバッジの©表記の右隣へバージョンを表示する。
+  (function () {
+    function injectFooterVersion() {
+      var badge = document.querySelector(".su-badge");
+      if (!badge) return false;
+      if (badge.querySelector(".footer-ver")) return true;
+      var ver = document.createElement("span");
+      ver.className = "footer-ver";
+      ver.textContent = "(v" + window.SQLab.APP_VERSION + ")";
+      badge.appendChild(ver);
+      return true;
+    }
+    if (!injectFooterVersion()) {
+      var tries = 0;
+      var timer = setInterval(function () {
+        if (injectFooterVersion() || ++tries > 20) clearInterval(timer);
+      }, 50);
+    }
+  })();
+</script>
+<script src="js/i18n.js?v=0.6.1"></script>
 <script>
   (function () {
     // T-zoneのデフォルト値(the Analyzer v0.5.1 確定値)。guide.htmlは特定の

@@ -4,24 +4,28 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Squash Laboratory</title>
-<link rel="stylesheet" href="css/style.css?v=0.6.0">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="apple-touch-icon" href="assets/favicon-180.png">
+<link rel="stylesheet" href="css/style.css?v=0.6.1">
 </head>
 <body>
 
 <div class="sticky-top">
 <header class="site-header">
-  <a class="site-header__brand" href="index.html">
-    <img class="site-header__logo" src="assets/subu-pic-header.png" alt=""
-         onerror="this.style.display='none'">
-    <span class="site-header__name">Squash Laboratory</span>
-    <span class="site-header__version" id="app-version"></span>
-  </a>
-  <p class="site-header__tagline" data-i18n="headerTagline"></p>
-  <div class="site-header__actions">
-    <a class="info-icon site-header__info" href="guide.html#overview" aria-label="guide">ⓘ</a>
-    <button id="lang-toggle" class="lang-toggle" type="button">EN</button>
+  <div class="site-header__title-group">
+    <a class="site-header__brand" href="index.html">
+      <img class="site-header__logo" src="assets/subu-pic-header.png" alt=""
+           onerror="this.style.display='none'">
+      <span class="site-header__name">Squash Laboratory</span>
+    </a>
+    <p class="site-header__tagline" data-i18n="headerTagline"></p>
   </div>
 </header>
+</div>
+<div class="site-header__actions">
+  <a class="info-icon site-header__info" href="guide.html#overview" aria-label="guide">ⓘ</a>
+  <button id="lang-toggle" class="lang-toggle" type="button">EN</button>
 </div>
 
 <main id="main">
@@ -71,18 +75,43 @@
     onSecretAction: null
   };
 </script>
-<script src="./assets/subutomo-badge.js?v=0.6.0"></script>
+<script src="./assets/subutomo-badge.js?v=0.6.1"></script>
 
-<script src="js/config.js?v=0.6.0"></script>
-<script src="js/i18n.js?v=0.6.0"></script>
-<script src="js/demo-data.js?v=0.6.0"></script>
-<script src="js/playernames.js?v=0.6.0"></script>
-<script src="js/loader.js?v=0.6.0"></script>
-<script src="js/summary.js?v=0.6.0"></script>
-<script src="js/court.js?v=0.6.0"></script>
-<script src="js/heatmap.js?v=0.6.0"></script>
-<script src="js/replay.js?v=0.6.0"></script>
-<script src="js/views.js?v=0.6.0"></script>
-<script src="js/app.js?v=0.6.0"></script>
+<script src="js/config.js?v=0.6.1"></script>
+<script>
+  // v0.6.1: バージョン表示は左下バッジの©表記の右隣へ集約する(mnymの
+  // injectFooterVersionと同じ手法。ただしtype="module"はfile://でCORS
+  // ブロックされるため、plain scriptでwindow.SQLab.APP_VERSIONを直接参照する)。
+  // badge.jsはbody内へ同期的に.su-badgeを描画するため通常は初回で成功するが、
+  // 将来の非同期化に備えごく短いリトライも残す。
+  (function () {
+    function injectFooterVersion() {
+      var badge = document.querySelector(".su-badge");
+      if (!badge) return false;
+      if (badge.querySelector(".footer-ver")) return true;
+      var ver = document.createElement("span");
+      ver.className = "footer-ver";
+      ver.textContent = "(v" + window.SQLab.APP_VERSION + ")";
+      badge.appendChild(ver);
+      return true;
+    }
+    if (!injectFooterVersion()) {
+      var tries = 0;
+      var timer = setInterval(function () {
+        if (injectFooterVersion() || ++tries > 20) clearInterval(timer);
+      }, 50);
+    }
+  })();
+</script>
+<script src="js/i18n.js?v=0.6.1"></script>
+<script src="js/demo-data.js?v=0.6.1"></script>
+<script src="js/playernames.js?v=0.6.1"></script>
+<script src="js/loader.js?v=0.6.1"></script>
+<script src="js/summary.js?v=0.6.1"></script>
+<script src="js/court.js?v=0.6.1"></script>
+<script src="js/heatmap.js?v=0.6.1"></script>
+<script src="js/replay.js?v=0.6.1"></script>
+<script src="js/views.js?v=0.6.1"></script>
+<script src="js/app.js?v=0.6.1"></script>
 </body>
 </html>
