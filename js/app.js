@@ -1,6 +1,6 @@
 // app.js — 画面制御(イベント配線・言語切替・エラー表示)。
 (function () {
-  var lastData = null; // 言語切替時にサマリーを再描画するため保持
+  var lastData = null; // 言語切替・名前編集時に再描画するため保持
 
   function showError(key, vars) {
     var box = document.getElementById("error-box");
@@ -14,18 +14,32 @@
     box.textContent = "";
   }
 
+  // 読込中に予期しない例外が起きても「無反応に見える」状態にせず、
+  // 必ずエラー表示か結果表示のどちらかに帰着させる(P0対応)。
   function showResult(data) {
-    lastData = data;
-    clearError();
-    document.getElementById("intro-panel").hidden = true;
-    var resultPanel = document.getElementById("result-panel");
-    resultPanel.hidden = false;
+    try {
+      lastData = data;
+      clearError();
+      document.getElementById("intro-panel").hidden = true;
+      document.getElementById("result-panel").hidden = false;
+      renderAll();
+    } catch (e) {
+      lastData = null;
+      document.getElementById("result-panel").hidden = true;
+      document.getElementById("intro-panel").hidden = false;
+      showError("errorGeneric", {});
+    }
+  }
+
+  function renderAll() {
+    if (!lastData) return;
     window.SQLab.Summary.render(
       document.getElementById("match-info"),
       document.getElementById("summary-cards"),
-      data
+      lastData,
+      renderAll // 名前編集後の再描画コールバックとして自分自身を渡す
     );
-    window.SQLab.Views.render(document.getElementById("heatmap-section"), data);
+    window.SQLab.Views.render(document.getElementById("heatmap-section"), lastData);
   }
 
   function showIntro() {
@@ -40,14 +54,12 @@
     window.SQLab.Loader.loadFromFile(file, showResult, showError);
   }
 
+  // テンプレート準拠: ボタンには表示中の言語の2文字のみを表示する(EN/JA相互トグル)。
   function updateLangButton() {
     var btn = document.getElementById("lang-toggle");
     var lang = window.SQLab.currentLang || window.SQLab.getLang();
-    btn.textContent = lang === "ja" ? "EN | JA" : "EN | JA";
+    btn.textContent = lang === "ja" ? "JA" : "EN";
     btn.setAttribute("data-current-lang", lang);
-    // 現在の言語を強調表示するクラスを付与
-    btn.classList.toggle("lang-toggle--ja", lang === "ja");
-    btn.classList.toggle("lang-toggle--en", lang === "en");
   }
 
   function applyLanguage(lang) {
@@ -55,15 +67,7 @@
     document.documentElement.lang = lang;
     window.SQLab.applyStaticI18n(document);
     updateLangButton();
-    // 現在表示中のエラーやサマリー/ヒートマップも再描画して言語を反映する
-    if (lastData) {
-      window.SQLab.Summary.render(
-        document.getElementById("match-info"),
-        document.getElementById("summary-cards"),
-        lastData
-      );
-      window.SQLab.Views.render(document.getElementById("heatmap-section"), lastData);
-    }
+    renderAll(); // 現在表示中のサマリー/ヒートマップ/リプレイも言語を反映して再描画
   }
 
   function init() {
@@ -72,7 +76,7 @@
 
     document.getElementById("app-version").textContent = "v" + window.SQLab.APP_VERSION;
 
-    var dropZone = document.getElementById("drop-zone");
+    var introPanel = document.getElementById("intro-panel");
     var fileInput = document.getElementById("file-input");
     var chooseBtn = document.getElementById("choose-file-btn");
     var demoBtn = document.getElementById("demo-btn");
@@ -83,23 +87,30 @@
       fileInput.click();
     });
 
+    // ファイル選択(change)で即読込。開くボタンは不要(P0対応)。
     fileInput.addEventListener("change", function (evt) {
       handleFile(evt.target.files[0]);
     });
 
-    dropZone.addEventListener("dragover", function (evt) {
+    // イントロパネル全体をドロップ領域にする(P0対応: 点線枠の小さな
+    // drop-zone div だけでなく、パネルのどこにドロップしても読み込める)。
+    introPanel.addEventListener("dragover", function (evt) {
       evt.preventDefault();
-      dropZone.classList.add("drop-zone--active");
+      introPanel.classList.add("intro-panel--drag-active");
     });
-    dropZone.addEventListener("dragleave", function () {
-      dropZone.classList.remove("drop-zone--active");
+    introPanel.addEventListener("dragleave", function (evt) {
+      if (evt.target === introPanel) {
+        introPanel.classList.remove("intro-panel--drag-active");
+      }
     });
-    dropZone.addEventListener("drop", function (evt) {
+    introPanel.addEventListener("drop", function (evt) {
       evt.preventDefault();
-      dropZone.classList.remove("drop-zone--active");
+      introPanel.classList.remove("intro-panel--drag-active");
       var file = evt.dataTransfer.files && evt.dataTransfer.files[0];
       handleFile(file);
     });
+
+    var dropZone = document.getElementById("drop-zone");
     dropZone.addEventListener("keydown", function (evt) {
       if (evt.key === "Enter" || evt.key === " ") {
         evt.preventDefault();

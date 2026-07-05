@@ -28,9 +28,14 @@ window.SQLab.I18N = {
       "Denominator is total main-camera time, not rally time.",
     unassignedNote:
       "Some time ranges could not be confidently assigned to a player and are excluded (shown as unassigned).",
-    footerText: "Analyzed by squash-lab · Data stays on your device",
+    footerText: "Analyzed by the Analyzer · Data stays on your device",
+    footerKofi: "Support on Ko-fi",
+    footerFeedback: "Feedback",
     backButton: "Load another file",
     demoBadge: "Demo data (synthetic)",
+    analyzerName: "the Analyzer",
+    summarySectionTitle: "Summary",
+    resetNameLabel: "Reset",
     heatmapSectionTitle: "Analysis",
     modeSideBySide: "Side by Side",
     modeOverlay: "Overlay",
@@ -41,6 +46,25 @@ window.SQLab.I18N = {
     legendP1Only: "P1 only",
     legendP2Only: "P2 only",
     legendBoth: "Both",
+    guideBack: "← Back to Squash Laboratory",
+    guideTitle: "Guide",
+    guideSummaryIntro: "P1/P2 summary cards show five metrics per player, computed from the loaded result.json.",
+    guideDistance: "Total distance covered (m), excluding sudden jumps faster than the speed cap (a tracking glitch, not a real sprint).",
+    guideWorkRate: "Distance divided by total main-camera minutes (not rally minutes) — a pace-of-movement figure comparable across matches of different lengths.",
+    guideCoverage: "Percentage of court cells (0.5m squares) where the player spent at least a minimum dwell time — how much of the court they actually used.",
+    guideAvgSpeed: "Average movement speed (m/s) while on court, i.e. distance divided by total on-court time.",
+    guideUnassignedTitle: "Unassigned time ranges",
+    guideHeatmapTitle: "Heatmap",
+    guideHeatmapBody:
+      "Side by Side shows each player's own court with a shared color scale, so the same dwell time always looks equally dark for both. " +
+      "Overlay blends both players on one court: red where only P1 spent time, blue where only P2 did, and purple where both did — making each player's exclusive territory visible at a glance.",
+    guideReplayTitle: "Replay",
+    guideReplayBody:
+      "Replay animates each player's position over time. When a player's position is genuinely missing (not just a normal gap between samples), their dot is hidden rather than frozen in place — the strip below the seek bar shows exactly which time ranges have data for each player, and which ranges were outside the main camera view.",
+    guideSchemaTitle: "Supported data format",
+    guideSchemaBody: "This viewer only accepts result.json files matching schema version 0.2. Older or newer incompatible versions will show an error naming both the supported and the loaded version.",
+    guideNamesTitle: "Player names",
+    guideNamesBody: "Renaming a player only changes what this browser displays (saved locally per video file) — it never modifies the underlying data file.",
   },
   ja: {
     dropPrompt: "result.json をここにドロップ、またはファイルを選択",
@@ -66,9 +90,14 @@ window.SQLab.I18N = {
       "Tゾーンは楕円({a}m×{b}m、T交点の{offset}m後方が中心)です。" +
       "分母はラリー時間ではなく主カメラ区間の合計時間です。",
     unassignedNote: "一部の時間帯は判定不能(未割当)として除外されています。",
-    footerText: "Analyzed by squash-lab / データは端末から出ません",
+    footerText: "動画解析ツールによる分析 / データは端末から出ません",
+    footerKofi: "Ko-fiで応援する",
+    footerFeedback: "フィードバック",
     backButton: "別のファイルを読み込む",
     demoBadge: "デモデータ(完全な合成データ)",
+    analyzerName: "動画解析ツール",
+    summarySectionTitle: "サマリー",
+    resetNameLabel: "既定に戻す",
     heatmapSectionTitle: "分析",
     modeSideBySide: "Side by Side",
     modeOverlay: "Overlay",
@@ -79,6 +108,28 @@ window.SQLab.I18N = {
     legendP1Only: "P1のみ",
     legendP2Only: "P2のみ",
     legendBoth: "両方",
+    guideBack: "← Squash Laboratoryへ戻る",
+    guideTitle: "ガイド",
+    guideSummaryIntro: "サマリーカードは、読み込んだresult.jsonから算出したプレイヤーごとの5指標を表示します。",
+    guideDistance: "総移動距離(m)。速度上限を超える急激な変位(トラッキングの飛びであり実際のダッシュではない)は除外しています。",
+    guideWorkRate: "移動距離 ÷ 主カメラ区間の合計分数(ラリー時間ではない)。試合時間が異なる相手同士でも比較できる「動きのペース」の指標です。",
+    guideCoverage: "コートを0.5m四方のセルに分割し、最低滞在時間以上そこにいたセルの割合。実際にコートをどれだけ広く使ったかを示します。",
+    guideAvgSpeed: "コート上にいた時間に対する平均移動速度(m/s)。移動距離をコート上滞在時間で割った値です。",
+    guideUnassignedTitle: "未割当の時間帯について",
+    guideHeatmapTitle: "ヒートマップ",
+    guideHeatmapBody:
+      "Side by Sideは各プレイヤー自身のコートを共通の色スケールで表示するため、同じ滞在時間なら両者とも同じ濃さに見えます。" +
+      "Overlayは1枚のコートに両者を重ねて表示します。赤=P1のみ、青=P2のみ、紫=両者ともに滞在した領域を示し、" +
+      "それぞれの選手が実質的に支配しているエリアが一目でわかります。",
+    guideReplayTitle: "リプレイ",
+    guideReplayBody:
+      "リプレイは各プレイヤーの位置を時間とともにアニメーション再生します。位置データが本当に存在しない" +
+      "(通常のサンプル間隔ではなく実際の欠損)場合は、丸を最後の位置に留めるのではなく非表示にします。" +
+      "シークバー下の帯は、各プレイヤーのデータがある時間帯と、主カメラ外だった時間帯を示します。",
+    guideSchemaTitle: "対応データ形式",
+    guideSchemaBody: "本ビューアはスキーマバージョン0.2のresult.jsonのみに対応しています。それ以外のバージョンは、対応バージョンと読み込まれたバージョンを併記したエラーを表示します。",
+    guideNamesTitle: "プレイヤー名について",
+    guideNamesBody: "プレイヤー名の変更は、このブラウザでの表示のみを変更します(動画ファイルごとにローカル保存)。元のデータファイルを書き換えることはありません。",
   },
 };
 

@@ -41,6 +41,25 @@ window.SQLab.Views = (function () {
     tabs.appendChild(replayTab);
     container.appendChild(tabs);
 
+    // 現在のモードに応じたガイドリンク(Heatmap ⓘ / Replay ⓘ)。
+    var modeInfo = document.createElement("div");
+    modeInfo.className = "heatmap__mode-info";
+    container.appendChild(modeInfo);
+
+    function updateModeInfo() {
+      modeInfo.innerHTML = "";
+      var anchor = state.mode === "replay" ? "replay" : "heatmap";
+      var labelKey = state.mode === "replay" ? "guideReplayTitle" : "guideHeatmapTitle";
+      var label = document.createElement("span");
+      label.textContent = window.SQLab.t(labelKey) + " ";
+      var link = document.createElement("a");
+      link.className = "info-icon";
+      link.href = "guide.html#" + anchor;
+      link.textContent = "ⓘ";
+      modeInfo.appendChild(label);
+      modeInfo.appendChild(link);
+    }
+
     var tZoneRow = document.createElement("label");
     tZoneRow.className = "tzone-toggle";
     var tZoneCheckbox = document.createElement("input");
@@ -73,6 +92,8 @@ window.SQLab.Views = (function () {
       canvasArea.className = "heatmap__canvases"; // 前モードの修飾クラスをリセット
       canvasArea.innerHTML = "";
       legendArea.innerHTML = "";
+
+      updateModeInfo();
 
       if (state.mode === "side") {
         window.SQLab.Heatmap.renderSideBySide(canvasArea, legendArea, data, state.showTZone);

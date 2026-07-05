@@ -3,22 +3,22 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>sq-lab</title>
+<title>Squash Laboratory</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <header class="site-header">
-  <div class="site-header__brand">
-    <span class="site-header__name">sq-lab</span>
+  <a class="site-header__brand" href="index.html">
+    <span class="site-header__name">Squash Laboratory</span>
     <span class="site-header__version" id="app-version"></span>
-  </div>
-  <button id="lang-toggle" class="lang-toggle" type="button">EN | JA</button>
+  </a>
+  <button id="lang-toggle" class="lang-toggle" type="button">EN</button>
 </header>
 
 <main id="main">
 
-  <section id="intro-panel" class="panel">
+  <section id="intro-panel" class="panel intro-panel">
     <p class="notice notice--info" data-i18n="dataStaysNotice"></p>
 
     <div id="drop-zone" class="drop-zone" tabindex="0">
@@ -44,12 +44,20 @@
 </main>
 
 <footer class="site-footer">
-  <span data-i18n="footerText"></span>
+  <p class="site-footer__tagline" data-i18n="footerText"></p>
+  <p class="site-footer__links">
+    <span class="site-footer__copyright">&copy; 2026 Subutomo Dev</span>
+    <span aria-hidden="true">&middot;</span>
+    <a href="https://ko-fi.com/subutomo" target="_blank" rel="noopener" data-i18n="footerKofi"></a>
+    <span aria-hidden="true">&middot;</span>
+    <a href="https://github.com/t-sumita/sq-lab/issues" target="_blank" rel="noopener" data-i18n="footerFeedback"></a>
+  </p>
 </footer>
 
 <script src="js/config.js"></script>
 <script src="js/i18n.js"></script>
 <script src="js/demo-data.js"></script>
+<script src="js/playernames.js"></script>
 <script src="js/loader.js"></script>
 <script src="js/summary.js"></script>
 <script src="js/court.js"></script>

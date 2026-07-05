@@ -53,6 +53,8 @@ body {
   display: flex;
   align-items: baseline;
   gap: 0.4rem;
+  color: inherit;
+  text-decoration: none;
 }
 
 .site-header__name {
@@ -81,6 +83,14 @@ body {
   font-size: 0.75rem;
   color: var(--color-muted);
   border-top: 1px solid var(--color-border);
+}
+
+.site-footer p {
+  margin: 0.25rem 0;
+}
+
+.site-footer__links a {
+  color: var(--color-muted);
 }
 
 /* ---- メイン ---- */
@@ -115,20 +125,26 @@ main {
   color: var(--color-muted);
 }
 
-.drop-zone {
+/* イントロパネル全体をドロップ領域として明示する(P0対応)。 */
+.intro-panel {
   border: 2px dashed var(--color-border);
   border-radius: var(--radius);
-  padding: 2rem 1rem;
+  padding: 1.25rem;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.intro-panel--drag-active {
+  border-color: var(--color-accent);
+  background: #f0f7ff;
+}
+
+.drop-zone {
+  padding: 1.5rem 1rem;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.75rem;
-}
-
-.drop-zone--active {
-  border-color: var(--color-accent);
-  background: #f0f7ff;
 }
 
 .demo-row {
@@ -211,19 +227,65 @@ main {
 
 .player-card__header {
   margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .player-card__name {
   font-weight: 700;
   font-size: 1.05rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
-.player-card--red .player-card__name {
+.player-card--red .player-card__name-text {
   color: var(--color-p1);
 }
 
-.player-card--blue .player-card__name {
+.player-card--blue .player-card__name-text {
   color: var(--color-p2);
+}
+
+.player-card__id-badge {
+  font-size: 0.7rem;
+  color: var(--color-muted);
+  font-weight: 400;
+}
+
+.player-card__edit-btn {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--color-muted);
+  padding: 0.2rem;
+  /* タッチ端末での誤操作を避けつつ押しやすいよう最低限のヒット領域を確保 */
+  min-width: 32px;
+  min-height: 32px;
+}
+
+.player-card__reset-btn {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 0.7rem;
+  color: var(--color-accent);
+  text-decoration: underline;
+  padding: 0.2rem 0;
+}
+
+.player-card__name-input {
+  font: inherit;
+  font-weight: 700;
+  font-size: 1.05rem;
+  border: 1px solid var(--color-accent);
+  border-radius: 4px;
+  padding: 0.1rem 0.3rem;
+  min-width: 8ch;
+  max-width: 16ch;
 }
 
 .player-card__metrics {
@@ -238,6 +300,12 @@ main {
   gap: 0.15rem;
 }
 
+.metric__label-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
 .metric__label {
   font-size: 0.75rem;
   color: var(--color-muted);
@@ -250,11 +318,21 @@ main {
   font-weight: 600;
 }
 
-.metric__note {
-  margin: 0.35rem 0 0;
-  font-size: 0.7rem;
+/* ⓘ ガイドリンク(guide.html該当アンカーへ)。 */
+.info-icon {
   color: var(--color-muted);
-  grid-column: 1 / -1;
+  text-decoration: none;
+  font-size: 0.85rem;
+  /* タッチでも押しやすいよう最低限のヒット領域を確保 */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  min-height: 20px;
+}
+
+.summary-cards__title {
+  margin-top: 0;
 }
 
 /* ---- ヒートマップ ---- */
@@ -299,6 +377,26 @@ main {
   font-size: 0.85rem;
   color: var(--color-muted);
   cursor: pointer;
+}
+
+.heatmap__mode-info {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+}
+
+.replay__legend {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.replay__legend-item--red {
+  color: var(--color-p1);
+}
+
+.replay__legend-item--blue {
+  color: var(--color-p2);
 }
 
 .heatmap__canvases {
@@ -490,4 +588,27 @@ main {
     flex: 1;
     min-width: 0;
   }
+}
+
+/* ---- guide.html ---- */
+
+.guide h1 {
+  font-size: 1.3rem;
+}
+
+.guide h2 {
+  font-size: 1rem;
+  margin-bottom: 0.3rem;
+}
+
+.guide section {
+  margin-bottom: 1.5rem;
+}
+
+.guide__back {
+  display: inline-block;
+  margin: 0.5rem 0 1rem;
+  color: var(--color-accent);
+  text-decoration: none;
+  font-size: 0.9rem;
 }

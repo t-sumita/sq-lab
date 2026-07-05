@@ -198,7 +198,7 @@ window.SQLab.Heatmap = (function () {
     p1Wrap.className = "heatmap__court-wrap";
     var p1Label = document.createElement("div");
     p1Label.className = "heatmap__court-label heatmap__court-label--red";
-    p1Label.textContent = (p1.display_name || p1.id) + " (P1)";
+    p1Label.textContent = window.SQLab.PlayerNames.getName(data.video.file, p1) + " (P1)";
     var p1Canvas = document.createElement("canvas");
     p1Wrap.appendChild(p1Label);
     p1Wrap.appendChild(p1Canvas);
@@ -207,7 +207,7 @@ window.SQLab.Heatmap = (function () {
     p2Wrap.className = "heatmap__court-wrap";
     var p2Label = document.createElement("div");
     p2Label.className = "heatmap__court-label heatmap__court-label--blue";
-    p2Label.textContent = (p2.display_name || p2.id) + " (P2)";
+    p2Label.textContent = window.SQLab.PlayerNames.getName(data.video.file, p2) + " (P2)";
     var p2Canvas = document.createElement("canvas");
     p2Wrap.appendChild(p2Label);
     p2Wrap.appendChild(p2Canvas);

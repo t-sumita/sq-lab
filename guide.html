@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guide — Squash Laboratory</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <a class="site-header__brand" href="index.html">
+    <span class="site-header__name">Squash Laboratory</span>
+  </a>
+  <button id="lang-toggle" class="lang-toggle" type="button">EN</button>
+</header>
+
+<main id="main" class="guide">
+  <a class="guide__back" href="index.html" data-i18n="guideBack"></a>
+  <h1 data-i18n="guideTitle"></h1>
+
+  <section id="summary">
+    <h2 data-i18n="summarySectionTitle"></h2>
+    <p data-i18n="guideSummaryIntro"></p>
+  </section>
+
+  <section id="distance">
+    <h2 data-i18n="metricDistance"></h2>
+    <p data-i18n="guideDistance"></p>
+  </section>
+
+  <section id="work-rate">
+    <h2 data-i18n="metricWorkRate"></h2>
+    <p data-i18n="guideWorkRate"></p>
+  </section>
+
+  <section id="t-dominance">
+    <h2 data-i18n="metricTDominance"></h2>
+    <p data-i18n="tDominanceNote"></p>
+  </section>
+
+  <section id="coverage">
+    <h2 data-i18n="metricCoverage"></h2>
+    <p data-i18n="guideCoverage"></p>
+  </section>
+
+  <section id="avg-speed">
+    <h2 data-i18n="metricAvgSpeed"></h2>
+    <p data-i18n="guideAvgSpeed"></p>
+  </section>
+
+  <section id="unassigned">
+    <h2 data-i18n="guideUnassignedTitle"></h2>
+    <p data-i18n="unassignedNote"></p>
+  </section>
+
+  <section id="heatmap">
+    <h2 data-i18n="guideHeatmapTitle"></h2>
+    <p data-i18n="guideHeatmapBody"></p>
+  </section>
+
+  <section id="replay">
+    <h2 data-i18n="guideReplayTitle"></h2>
+    <p data-i18n="guideReplayBody"></p>
+  </section>
+
+  <section id="schema">
+    <h2 data-i18n="guideSchemaTitle"></h2>
+    <p data-i18n="guideSchemaBody"></p>
+  </section>
+
+  <section id="names">
+    <h2 data-i18n="guideNamesTitle"></h2>
+    <p data-i18n="guideNamesBody"></p>
+  </section>
+
+  <a class="guide__back" href="index.html" data-i18n="guideBack"></a>
+</main>
+
+<footer class="site-footer">
+  <p class="site-footer__tagline" data-i18n="footerText"></p>
+  <p class="site-footer__links">
+    <span class="site-footer__copyright">&copy; 2026 Subutomo Dev</span>
+    <span aria-hidden="true">&middot;</span>
+    <a href="https://ko-fi.com/subutomo" target="_blank" rel="noopener" data-i18n="footerKofi"></a>
+    <span aria-hidden="true">&middot;</span>
+    <a href="https://github.com/t-sumita/sq-lab/issues" target="_blank" rel="noopener" data-i18n="footerFeedback"></a>
+  </p>
+</footer>
+
+<script src="js/i18n.js"></script>
+<script>
+  (function () {
+    // T-zoneのデフォルト値(the Analyzer v0.5.1 確定値)。guide.htmlは特定の
+    // result.jsonを読み込まない静的ページのため、tDominanceNoteの
+    // {a}/{b}/{offset} プレースホルダはここでデフォルト値により展開する。
+    var DEFAULT_T_ZONE = { a: 1.2, b: 1.0, offset: 0.6 };
+
+    function apply(lang) {
+      window.SQLab.currentLang = lang;
+      document.documentElement.lang = lang;
+      window.SQLab.applyStaticI18n(document);
+      document.getElementById("lang-toggle").textContent = lang === "ja" ? "JA" : "EN";
+      document.querySelector("#t-dominance p").textContent =
+        window.SQLab.t("tDominanceNote", DEFAULT_T_ZONE);
+    }
+    apply(window.SQLab.getLang());
+    document.getElementById("lang-toggle").addEventListener("click", function () {
+      var next = window.SQLab.currentLang === "ja" ? "en" : "ja";
+      window.SQLab.setLang(next);
+      apply(next);
+    });
+  })();
+</script>
+</body>
+</html>

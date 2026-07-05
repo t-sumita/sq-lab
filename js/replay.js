@@ -155,6 +155,18 @@ window.SQLab.Replay = (function () {
 
     container.classList.add("replay");
 
+    var legend = document.createElement("div");
+    legend.className = "replay__legend";
+    var p1LegendLabel = document.createElement("span");
+    p1LegendLabel.className = "replay__legend-item replay__legend-item--red";
+    p1LegendLabel.textContent = window.SQLab.PlayerNames.getName(data.video.file, p1) + " (P1)";
+    var p2LegendLabel = document.createElement("span");
+    p2LegendLabel.className = "replay__legend-item replay__legend-item--blue";
+    p2LegendLabel.textContent = window.SQLab.PlayerNames.getName(data.video.file, p2) + " (P2)";
+    legend.appendChild(p1LegendLabel);
+    legend.appendChild(p2LegendLabel);
+    container.appendChild(legend);
+
     var canvasWrap = document.createElement("div");
     canvasWrap.className = "heatmap__court-wrap replay__court-wrap";
     var canvas = document.createElement("canvas");
