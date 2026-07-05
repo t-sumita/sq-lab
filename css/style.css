@@ -118,6 +118,9 @@ body {
 /* v0.6.1: ⓘ/LANGはヘッダー内スクロール追従ではなく、バッジ(左下)・
    footer-right(右下)と同じ「viewport固定レイヤー」の流儀でviewport右上に固定する。
    任意のスクロール済みコンテンツの上でも読めるよう、小さな背景カードにする。 */
+/* v0.6.2: 囲みボックス(背景/枠線/影)を撤去し、ⓘ・LANGボタン単体を
+   並べるだけにする(mnymの右上ボタン群も個々のボタンの見た目のみで
+   共通の囲みは持たない)。 */
 .site-header__actions {
   position: fixed;
   top: 12px;
@@ -126,11 +129,6 @@ body {
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  padding: 0.25rem 0.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .site-header__info {
@@ -212,14 +210,56 @@ body {
   text-decoration: underline;
 }
 
-/* 固定フッター帯(バッジ/支援リンクの下に半透明背景を敷く、mnym踏襲)。 */
+/* v0.6.2: PC幅ではアイコン+言語別文言、768px未満ではアイコン無し・
+   英語のみの短縮表示に切り替える(バッジ側の©(vX.Y.Z)表記が伸びた分、
+   同じ行の右側リンク群を狭幅で確実に収める)。 */
+.support-links--mobile,
+.feedback-link--mobile {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .support-links--desktop,
+  .feedback-link--desktop {
+    display: none;
+  }
+
+  .support-links--mobile,
+  .feedback-link--mobile {
+    display: flex;
+  }
+
+  .feedback-link--mobile {
+    display: inline-flex;
+  }
+
+  /* バッジの©(vX.Y.Z)表記が横幅約215px(viewport幅に関わらず一定)を占めるため、
+     375px幅でも重ならないよう文字サイズ・字間・間隔を切り詰める。 */
+  .support-links--mobile,
+  .feedback-link--mobile {
+    font-size: 9px;
+    letter-spacing: normal;
+  }
+
+  .footer-right {
+    gap: 5px;
+  }
+
+  .support-links--mobile {
+    gap: 3px;
+  }
+}
+
+/* 固定フッター帯。v0.6.2: 半透明グラデーションから不透明+上罫線に変更し、
+   コンテンツとバッジ/リンク群の文字かぶりを確実に防ぐ(mnym踏襲)。 */
 .footer-bar {
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
   height: 56px;
-  background: linear-gradient(to top, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0));
+  background: var(--color-bg);
+  border-top: 1px solid var(--card-border);
   z-index: 8998;
   pointer-events: none;
 }
@@ -299,15 +339,6 @@ body.body--drag-active {
 .notice--muted {
   background: #f7f7f7;
   color: var(--color-muted);
-}
-
-.notice--icon-only {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  padding: 0.2rem 0;
-  background: none;
-  font-size: 0.8rem;
 }
 
 /* イントロパネル全体をドロップ領域として明示する(P0対応)。 */
@@ -851,10 +882,15 @@ body.body--drag-active {
   }
 
   /* v0.6.1: 狭幅ではタグラインを独立した下段行に折返す(タイトルとの横並びは
-     維持できないため。mnymも480px以下で同様にflex-basis:100%へ切替える)。 */
+     維持できないため。mnymも480px以下で同様にflex-basis:100%へ切替える)。
+     v0.6.2: 文言を短縮した上で、下段1行に収まるようnowrap+ellipsisで
+     保険をかける(端末幅が極端に狭い場合でも改行で崩れない)。 */
   .site-header__tagline {
     flex-basis: 100%;
     font-size: 0.7rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .site-header {

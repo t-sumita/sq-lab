@@ -15,7 +15,7 @@ window.SQLab.I18N = {
     errorMissingField: "Missing required field: {field}",
     errorParseFailed: "Could not read this file as valid JSON.",
     errorGeneric: "Something went wrong while loading this file.",
-    headerTagline: "View squash match analysis — heatmaps, stats and movement.",
+    headerTagline: "View analysis data from your match videos.",
     matchInfoTitle: "Match Info",
     videoFileLabel: "Video file",
     analyzedFpsLabel: "Analyzed FPS",
@@ -29,9 +29,6 @@ window.SQLab.I18N = {
     tDominanceNote:
       "T-zone is an ellipse ({a}m × {b}m, centered {offset}m behind the T). " +
       "Denominator is total main-camera time, not rally time.",
-    unassignedNote:
-      "Some time ranges could not be confidently assigned to a player and are excluded (shown as unassigned).",
-    unassignedShortLabel: "Includes unassigned time",
     footerKofi: "☕ Ko-fi",
     footerSponsors: "❤️ Sponsors",
     footerFeedback: "📣 Feedback",
@@ -111,7 +108,7 @@ window.SQLab.I18N = {
     errorMissingField: "必須フィールドが見つかりません: {field}",
     errorParseFailed: "このファイルをJSONとして読み込めませんでした。",
     errorGeneric: "ファイルの読み込み中に問題が発生しました。",
-    headerTagline: "試合の解析データから、配置・スタッツ・動きを確認できます。",
+    headerTagline: "試合動画の解析データを確認できます。",
     matchInfoTitle: "試合情報",
     videoFileLabel: "動画ファイル",
     analyzedFpsLabel: "解析フレームレート",
@@ -127,8 +124,6 @@ window.SQLab.I18N = {
     tDominanceNote:
       "Tゾーンは楕円({a}m×{b}m、T交点の{offset}m後方が中心)です。" +
       "分母はラリー時間ではなく主カメラ区間の合計時間です。",
-    unassignedNote: "一部の時間帯は判定不能(未割当)として除外されています。",
-    unassignedShortLabel: "未割当あり",
     footerKofi: "☕ チップ",
     footerSponsors: "❤️ Sponsors",
     footerFeedback: "📣 ご意見・ご要望",

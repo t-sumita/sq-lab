@@ -228,3 +228,29 @@ subu-mnym(mnym.subutomo.dev のソース)を正の参照実装として、ヘッ
 - **ファビコン**: `subutomo-template/assets/favicon.{svg,-32.png,-180.png}`
   をそのままコピーし、標準的な3行の`<link>`タグで導入(共有アセットの
   ため改変なし)
+
+## 画面構成(v0.6.2: モバイル調整パッチ)
+
+実機確認フィードバックへの対応。
+
+- **タグライン**: 文言短縮(EN "View analysis data from your match videos."
+  / JA「試合動画の解析データを確認できます。」)。`white-space:nowrap` +
+  `text-overflow:ellipsis`で保険をかけ、狭幅1行に収める
+- **ⓘ/LANGの囲みボックス撤去**: v0.6.1で付けた背景/枠線/影を撤去し、
+  ボタン単体を並べるだけにした(mnymの右上ボタン群も共通の囲みは持たない)
+- **「未割当あり ⓘ」行を試合情報カードから削除**: guide.htmlの用語集
+  (`#glossary-unassigned`)で説明を充足済みのため、断片的な注記は不要と判断。
+  `unassignedNote`/`unassignedShortLabel`のi18nキーと`.notice--icon-only`の
+  CSSは未使用になったため削除した
+- **フッターの文字かぶり対策**:
+  - `.footer-bar`を半透明グラデーションから不透明背景+上罫線(`--card-border`)
+    に変更し、コンテンツとの重なりを視覚的に確実に防ぐ
+  - **バッジの©(vX.Y.Z)表記は幅約215px(viewport幅によらず一定、共有アセット
+    のため改変不可)** を占めるため、375px幅では残り約130px強しか
+    footer-right側に使えない。767px未満で`.support-links`/`.feedback-link`を
+    アイコン無し・英語のみ・font-size 9px・letter-spacing:normalの
+    `--mobile`版に丸ごと差し替える(サイト言語がJAでも、モバイル版は
+    常に英語表記——指示に基づく仕様。i18nに依存しない固定HTMLを
+    desktop版と並べて用意し、メディアクエリで表示切替する方式とした)
+  - 375px幅で実測: バッジ右端231.5px、footer-right左端243.1px
+    (ギャップ約11.6px、重なりなし)をE2Eで確認
