@@ -42,7 +42,17 @@ body {
   flex-direction: column;
 }
 
-/* ---- ヘッダー / フッター ---- */
+/* ---- ヘッダー / フッター(v0.6.0: subu-mnym準拠) ---- */
+
+/* header を viewport 上端に固定表示する(mnymの.sticky-topと同じ手法)。
+   z-indexはバッジ(9999)/バッジパネルより下に必ず収める。 */
+.sticky-top {
+  position: sticky;
+  top: 0;
+  z-index: 90;
+  width: 100%;
+  background: var(--color-bg);
+}
 
 .site-header {
   display: flex;
@@ -53,14 +63,18 @@ body {
   max-width: var(--content-max-width);
   width: 100%;
   margin: 0 auto;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .site-header__brand {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  align-items: baseline;
+  gap: 0.6rem;
   color: inherit;
   text-decoration: none;
+  flex-wrap: wrap;
+  min-width: 0;
 }
 
 .site-header__logo {
@@ -68,11 +82,28 @@ body {
   width: 28px;
   border-radius: 50%;
   display: block;
+  align-self: center;
 }
 
+/* タイトル「Squash Laboratory」: mnymの「資産ミックス」と同じベクター中抜き
+   文字(-webkit-text-stroke)。セリフ体+アウトライン+アクセント色塗り。
+   非対応ブラウザは color フォールバックでアクセント色の通常塗りになる。 */
 .site-header__name {
+  font-family: Georgia, "Times New Roman", "Hiragino Mincho ProN", "Yu Mincho",
+    "Noto Serif JP", serif;
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 1.3rem;
+  letter-spacing: 0.02em;
+  color: var(--color-accent);
+  -webkit-text-stroke: 0.5px var(--color-text);
+  -webkit-text-fill-color: var(--color-accent);
+}
+
+.site-header__tagline {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.8rem;
+  flex-basis: 100%;
 }
 
 .site-header__version {
@@ -101,22 +132,64 @@ body {
   cursor: pointer;
 }
 
-.site-footer {
-  margin-top: auto;
-  padding: 1rem;
-  text-align: center;
-  font-size: 0.75rem;
-  color: var(--color-muted);
-  border-top: 1px solid var(--color-border);
+/* 右下固定クラスタ(mnymの.footer-rightを移植)。中央フッターは廃止
+   (©表記は左下バッジ側にあるため重複を避ける)。 */
+.footer-right {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  z-index: 8999; /* バッジ/バッジパネル(9999)より下 */
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.site-footer .site-footer__links {
-  max-width: var(--content-max-width);
-  margin: 0.25rem auto;
+.support-links {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font: 11px ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  letter-spacing: 0.03em;
 }
 
-.site-footer__links a {
+.support-links a {
   color: var(--color-muted);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.support-links a:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+
+.support-links .support-sep {
+  color: var(--color-muted);
+  opacity: 0.6;
+}
+
+.feedback-link {
+  font: 700 13px ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  letter-spacing: 0.03em;
+  color: var(--color-accent);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.feedback-link:hover {
+  text-decoration: underline;
+}
+
+/* 固定フッター帯(バッジ/支援リンクの下に半透明背景を敷く、mnym踏襲)。 */
+.footer-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 56px;
+  background: linear-gradient(to top, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0));
+  z-index: 8998;
+  pointer-events: none;
 }
 
 /* ---- メイン ---- */
@@ -130,10 +203,12 @@ main {
   /* モバイルでカードが端に張り付かないよう最低12pxの左右余白を確保 */
   padding-left: max(1rem, 12px);
   padding-right: max(1rem, 12px);
-  /* 左下固定のSubutomoバッジ(.su-badge、bottom:16px/left:16px、高さ約24px)と
-     ページ末尾の操作要素(タブ等)が短いページで重なりクリック不能になる
-     のを避けるための余白。 */
-  padding-bottom: 64px;
+  /* 左下固定のSubutomoバッジ(.su-badge、bottom:16px/left:16px、高さ約24px)や
+     右下固定の.footer-right/.footer-barと、ページ末尾の操作要素(タブ・
+     リプレイのシーク/ストリップ等)が短いビューポートで重なるのを、
+     z-index競争ではなく間隔で避けるための余白(v0.6.0でz-index:10000を
+     撤廃した代替策。バッジ/バッジ展開パネルは常に最前面のまま)。 */
+  padding-bottom: 128px;
 }
 
 /* ドラッグ中はページ全体で受け付けていることを示す(ボディ全体がドロップ領域)。 */
@@ -434,17 +509,6 @@ body.body--drag-active {
   gap: 0.5rem;
   flex-wrap: wrap;
   align-items: center;
-  /* 左下固定のSubutomoバッジ(z-index:9999)が短いビューポートでタブ行と
-     視覚的に重なりクリックを奪うことがあるため、自サイトの操作要素を
-     常にバッジより上に来させる。 */
-  position: relative;
-  z-index: 10000;
-}
-
-.tzone-toggle,
-.replay__controls {
-  position: relative;
-  z-index: 10000;
 }
 
 .heatmap__tab-group {
@@ -463,6 +527,30 @@ body.body--drag-active {
   text-transform: uppercase;
   letter-spacing: 0.02em;
   margin-right: 0.2rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+/* Replayタブ+ⓘの並び(v0.6.0: 重複していた「ヒートマップ ⓘ」行を廃止し、
+   タブ行自体にⓘを統合)。 */
+.replay__tab-group {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+/* Side by Side / Overlay 共通の表示サイズスライダー(0.7x〜1.3x)。 */
+.heatmap__size-control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--color-muted);
+}
+
+.heatmap__size-control input[type="range"] {
+  width: 120px;
 }
 
 .replay__trail-group {
@@ -500,11 +588,6 @@ body.body--drag-active {
   cursor: pointer;
 }
 
-.heatmap__mode-info {
-  font-size: 0.8rem;
-  color: var(--color-muted);
-}
-
 .replay__legend {
   display: flex;
   gap: 1rem;
@@ -523,6 +606,7 @@ body.body--drag-active {
 .heatmap__canvases {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 1rem;
 }
 
@@ -530,6 +614,14 @@ body.body--drag-active {
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
+  width: 100%;
+}
+
+/* OverlayのコートはSide by Sideの1コートと従来の全幅表示の中間サイズとし、
+   中央配置にする(v0.6.0: 突然の巨大化を解消)。 */
+.heatmap__canvases--overlay .heatmap__court-wrap {
+  max-width: 640px;
+  margin: 0 auto;
 }
 
 .heatmap__court-wrap canvas {
@@ -562,27 +654,14 @@ body.body--drag-active {
   flex-wrap: wrap;
 }
 
+/* v0.6.0: 単色ヒートマップの"Dwell time"カラーバー凡例は削除し、色の意味は
+   guide.htmlの機能説明へ移した。.legendは重畳モードの色分け凡例(--overlay)
+   のみが使う共通ベースとして残す。 */
 .legend {
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
   min-width: 120px;
-}
-
-.legend__label {
-  color: var(--color-muted);
-}
-
-.legend__bar {
-  height: 10px;
-  border-radius: 4px;
-  border: 1px solid var(--color-border);
-}
-
-.legend__ticks {
-  display: flex;
-  justify-content: space-between;
-  color: var(--color-muted);
 }
 
 .legend--overlay {
@@ -636,6 +715,15 @@ body.body--drag-active {
   cursor: pointer;
 }
 
+/* v0.6.0: .replay__btn(background:#fff)がカスケード順で.tab-btn--activeより
+   後に来るため、同じ詳細度(0,1,0)では選択色が白に打ち消されていた不具合を修正。
+   速度ボタン・トレイルボタンの選択状態をタブと同じ配色で確実に表示する。 */
+.replay__btn.tab-btn--active {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+}
+
 .replay__playpause {
   font-size: 1.1rem;
 }
@@ -658,15 +746,69 @@ body.body--drag-active {
   font-size: 0.85rem;
 }
 
-.replay__coverage {
+/* v0.6.0: シークスライダーが上、データ充足ストリップは下(旧: 逆順)。
+   スライダーの両端に開始/終了時刻を表示する。 */
+.replay__seek-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   width: 100%;
-  display: block;
-  border-radius: 4px;
+}
+
+.replay__seek-time {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  flex-shrink: 0;
 }
 
 .replay__seek {
   width: 100%;
   height: 44px;
+  flex: 1;
+}
+
+.replay__coverage-wrap {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.replay__coverage-labels {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.replay__coverage-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.replay__coverage-label::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.replay__coverage-label--red::before {
+  background: var(--color-p1);
+}
+
+.replay__coverage-label--blue::before {
+  background: var(--color-p2);
+}
+
+.replay__coverage {
+  width: 100%;
+  display: block;
+  border-radius: 4px;
 }
 
 /* ---- 小画面(375px相当)でも崩れないための調整 ---- */
@@ -703,11 +845,13 @@ body.body--drag-active {
 
   .heatmap__canvases--side {
     flex-direction: row;
+    justify-content: center;
   }
 
   .heatmap__canvases--side .heatmap__court-wrap {
     flex: 1;
     min-width: 0;
+    max-width: 480px;
   }
 }
 
@@ -726,6 +870,18 @@ body.body--drag-active {
   margin-bottom: 1.5rem;
 }
 
+.guide h3 {
+  font-size: 0.95rem;
+  margin-bottom: 0.3rem;
+}
+
+/* 「概要」と「機能説明」の間の見出し(v0.6.0: mnym準拠のガイド再構成)。 */
+.guide__section-divider {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--card-border);
+}
+
 .guide__back {
   display: inline-block;
   margin: 0.5rem 0 1rem;
@@ -741,4 +897,70 @@ body.body--drag-active {
 
 .guide__see-also a {
   color: var(--color-accent);
+}
+
+/* 目次(mnymのguide.htmlを移植: グループ化された目次カード)。 */
+.toc {
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  padding: 0.9rem 1.1rem;
+  margin-bottom: 1.5rem;
+  background: #fff;
+}
+
+.toc p {
+  margin: 0 0 0.5rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.toc a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.toc a:hover {
+  text-decoration: underline;
+}
+
+.toc .toc-groups {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.toc .toc-group {
+  margin: 0 0 0.6rem;
+}
+
+.toc .toc-group:last-child {
+  margin-bottom: 0;
+}
+
+.toc .toc-group-label {
+  margin: 0.5rem 0 0.25rem;
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  letter-spacing: 0.04em;
+}
+
+.toc .toc-group:first-child .toc-group-label {
+  margin-top: 0;
+}
+
+.toc .toc-group ul {
+  padding-left: 1.1rem;
+  margin: 0;
+}
+
+.guide__glossary dt {
+  font-weight: 700;
+  margin-top: 0.8rem;
+}
+
+.guide__glossary dd {
+  margin: 0.2rem 0 0;
+  color: var(--color-muted);
 }

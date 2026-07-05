@@ -5,7 +5,7 @@
 window.SQLab = window.SQLab || {};
 
 window.SQLab.Views = (function () {
-  var state = { mode: "side", showTZone: true };
+  var state = { mode: "side", showTZone: true, heatmapScale: 1 };
   var currentResizeHandler = null;
 
   function tabBtn(text, active) {
@@ -14,6 +14,14 @@ window.SQLab.Views = (function () {
     b.className = "tab-btn" + (active ? " tab-btn--active" : "");
     b.textContent = text;
     return b;
+  }
+
+  function infoIcon(anchor) {
+    var link = document.createElement("a");
+    link.className = "info-icon";
+    link.href = "guide.html#" + anchor;
+    link.textContent = "ⓘ";
+    return link;
   }
 
   function render(container, data) {
@@ -35,41 +43,44 @@ window.SQLab.Views = (function () {
     tabs.className = "heatmap__tabs";
 
     // Side by Side / Overlay を「Heatmap」グループとして視覚的に括る(v0.5.0)。
+    // v0.6.0: 別行だった「ヒートマップ ⓘ」を廃止し、ⓘはこのグループラベルに統合する。
     var heatmapGroup = document.createElement("div");
     heatmapGroup.className = "heatmap__tab-group";
     var heatmapGroupLabel = document.createElement("span");
     heatmapGroupLabel.className = "heatmap__tab-group-label";
-    heatmapGroupLabel.textContent = window.SQLab.t("heatmapGroupLabel") + ":";
+    heatmapGroupLabel.appendChild(document.createTextNode(window.SQLab.t("heatmapGroupLabel") + ":"));
+    heatmapGroupLabel.appendChild(infoIcon("heatmap"));
     var sideTab = tabBtn(window.SQLab.t("modeSideBySide"), state.mode === "side");
     var overlayTab = tabBtn(window.SQLab.t("modeOverlay"), state.mode === "overlay");
     heatmapGroup.appendChild(heatmapGroupLabel);
     heatmapGroup.appendChild(sideTab);
     heatmapGroup.appendChild(overlayTab);
 
+    // Replayタブ自身の右にⓘを添える(同じくv0.6.0でHeatmap側と統一)。
+    var replayGroup = document.createElement("div");
+    replayGroup.className = "replay__tab-group";
     var replayTab = tabBtn(window.SQLab.t("modeReplay"), state.mode === "replay");
+    replayGroup.appendChild(replayTab);
+    replayGroup.appendChild(infoIcon("replay"));
 
     tabs.appendChild(heatmapGroup);
-    tabs.appendChild(replayTab);
+    tabs.appendChild(replayGroup);
     container.appendChild(tabs);
 
-    // 現在のモードに応じたガイドリンク(Heatmap ⓘ / Replay ⓘ)。
-    var modeInfo = document.createElement("div");
-    modeInfo.className = "heatmap__mode-info";
-    container.appendChild(modeInfo);
-
-    function updateModeInfo() {
-      modeInfo.innerHTML = "";
-      var anchor = state.mode === "replay" ? "replay" : "heatmap";
-      var labelKey = state.mode === "replay" ? "guideReplayTitle" : "guideHeatmapTitle";
-      var label = document.createElement("span");
-      label.textContent = window.SQLab.t(labelKey) + " ";
-      var link = document.createElement("a");
-      link.className = "info-icon";
-      link.href = "guide.html#" + anchor;
-      link.textContent = "ⓘ";
-      modeInfo.appendChild(label);
-      modeInfo.appendChild(link);
-    }
+    // Side by Side / Overlay 共通の表示サイズスライダー(0.7x〜1.3x)。Replay中は非表示。
+    var sizeRow = document.createElement("div");
+    sizeRow.className = "heatmap__size-control";
+    var sizeLabel = document.createElement("span");
+    sizeLabel.textContent = window.SQLab.t("heatmapSizeLabel");
+    var sizeSlider = document.createElement("input");
+    sizeSlider.type = "range";
+    sizeSlider.min = "0.7";
+    sizeSlider.max = "1.3";
+    sizeSlider.step = "0.05";
+    sizeSlider.value = String(state.heatmapScale);
+    sizeRow.appendChild(sizeLabel);
+    sizeRow.appendChild(sizeSlider);
+    container.appendChild(sizeRow);
 
     var tZoneRow = document.createElement("label");
     tZoneRow.className = "tzone-toggle";
@@ -104,12 +115,12 @@ window.SQLab.Views = (function () {
       canvasArea.innerHTML = "";
       legendArea.innerHTML = "";
 
-      updateModeInfo();
+      sizeRow.hidden = state.mode === "replay";
 
       if (state.mode === "side") {
-        window.SQLab.Heatmap.renderSideBySide(canvasArea, legendArea, data, state.showTZone);
+        window.SQLab.Heatmap.renderSideBySide(canvasArea, legendArea, data, state.showTZone, state.heatmapScale);
       } else if (state.mode === "overlay") {
-        window.SQLab.Heatmap.renderOverlay(canvasArea, legendArea, data, state.showTZone);
+        window.SQLab.Heatmap.renderOverlay(canvasArea, legendArea, data, state.showTZone, state.heatmapScale);
       } else {
         window.SQLab.Replay.render(canvasArea, data, state.showTZone);
       }
@@ -132,6 +143,10 @@ window.SQLab.Views = (function () {
     });
     tZoneCheckbox.addEventListener("change", function () {
       state.showTZone = tZoneCheckbox.checked;
+      redraw();
+    });
+    sizeSlider.addEventListener("input", function () {
+      state.heatmapScale = parseFloat(sizeSlider.value);
       redraw();
     });
 

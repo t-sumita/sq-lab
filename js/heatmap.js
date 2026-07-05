@@ -117,42 +117,6 @@ window.SQLab.Heatmap = (function () {
     return setup;
   }
 
-  // 0〜maxValのグラデーション凡例(単色)。
-  function renderLegendBar(container, rgb, maxVal, labelText) {
-    container.innerHTML = "";
-    var wrap = document.createElement("div");
-    wrap.className = "legend";
-
-    var label = document.createElement("div");
-    label.className = "legend__label";
-    label.textContent = labelText;
-    wrap.appendChild(label);
-
-    var bar = document.createElement("div");
-    bar.className = "legend__bar";
-    bar.style.background =
-      "linear-gradient(to right, rgba(" +
-      rgb.join(",") +
-      ",0), rgba(" +
-      rgb.join(",") +
-      "," +
-      MAX_ALPHA +
-      "))";
-    wrap.appendChild(bar);
-
-    var ticks = document.createElement("div");
-    ticks.className = "legend__ticks";
-    var t0 = document.createElement("span");
-    t0.textContent = "0s";
-    var t1 = document.createElement("span");
-    t1.textContent = maxVal.toFixed(1) + "s";
-    ticks.appendChild(t0);
-    ticks.appendChild(t1);
-    wrap.appendChild(ticks);
-
-    container.appendChild(wrap);
-  }
-
   // 重畳モードの凡例(色の意味: 赤=P1のみ, 青=P2のみ, 紫=両方)。
   function renderOverlayLegend(container) {
     container.innerHTML = "";
@@ -182,7 +146,7 @@ window.SQLab.Heatmap = (function () {
   // views.js から呼ばれる描画API(タブ・トグル・リサイズ監視は持たない)
   // ---------------------------------------------------------------------
 
-  function renderSideBySide(canvasArea, legendArea, data, showTZone) {
+  function renderSideBySide(canvasArea, legendArea, data, showTZone, scale) {
     var p1 = data.players.find(function (p) { return p.id === "P1"; });
     var p2 = data.players.find(function (p) { return p.id === "P2"; });
     if (!p1 || !p2 || !p1.metrics.heatmap || !p2.metrics.heatmap) return;
@@ -215,22 +179,24 @@ window.SQLab.Heatmap = (function () {
     canvasArea.appendChild(p1Wrap);
     canvasArea.appendChild(p2Wrap);
 
-    var w = p1Wrap.clientWidth || canvasArea.clientWidth || 320;
+    // 表示サイズスライダー(0.7x〜1.3x)を、レイアウトが決めた自然な幅に掛けて反映する。
+    // (広い画面のmax-width:480px制約はJSでの明示widthより先に読み取り、その後解除する)
+    var naturalW = p1Wrap.clientWidth || canvasArea.clientWidth || 320;
+    var w = Math.round(naturalW * (scale || 1));
+    p1Wrap.style.flex = "none";
+    p2Wrap.style.flex = "none";
+    p1Wrap.style.maxWidth = "none";
+    p2Wrap.style.maxWidth = "none";
+    p1Wrap.style.width = w + "px";
+    p2Wrap.style.width = w + "px";
     paintSingle(p1Canvas, w, gridP1, maxVal, COLOR_P1, tZone, showTZone);
     paintSingle(p2Canvas, w, gridP2, maxVal, COLOR_P2, tZone, showTZone);
 
-    var legendRow = document.createElement("div");
-    legendRow.className = "heatmap__legend-row";
-    var l1 = document.createElement("div");
-    var l2 = document.createElement("div");
-    legendRow.appendChild(l1);
-    legendRow.appendChild(l2);
-    legendArea.appendChild(legendRow);
-    renderLegendBar(l1, COLOR_P1, maxVal, window.SQLab.t("legendDwellTime"));
-    renderLegendBar(l2, COLOR_P2, maxVal, window.SQLab.t("legendDwellTime"));
+    // v0.6.0: "Dwell time"カラーバー凡例は削除(色の意味はguide.htmlへ移した)。
+    // legendAreaは意図的に空のまま(Side by Sideには重畳色の凡例は不要)。
   }
 
-  function renderOverlay(canvasArea, legendArea, data, showTZone) {
+  function renderOverlay(canvasArea, legendArea, data, showTZone, scale) {
     var p1 = data.players.find(function (p) { return p.id === "P1"; });
     var p2 = data.players.find(function (p) { return p.id === "P2"; });
     if (!p1 || !p2 || !p1.metrics.heatmap || !p2.metrics.heatmap) return;
@@ -248,7 +214,15 @@ window.SQLab.Heatmap = (function () {
     wrap.appendChild(canvas);
     canvasArea.appendChild(wrap);
 
-    var w = wrap.clientWidth || canvasArea.clientWidth || 320;
+    // Side by Sideの1コートと従来の全幅表示の中間サイズ(CSSのmax-width:640pxで
+    // 既に中間サイズ・中央配置になっている)を基準幅とし、スライダーの倍率を掛ける。
+    // max-width:640pxを読み取った"後"にmax-widthを解除しないと、scale>1で
+    // 640pxを超えて拡大できなくなる(CSSのクランプがJSの明示widthより優先されるため)。
+    var naturalW = wrap.clientWidth || canvasArea.clientWidth || 320;
+    var w = Math.round(naturalW * (scale || 1));
+    wrap.style.maxWidth = "none";
+    wrap.style.width = w + "px";
+    wrap.style.margin = "0 auto";
     paintOverlay(canvas, w, gridP1, gridP2, maxVal, tZone, showTZone);
 
     renderOverlayLegend(legendArea);

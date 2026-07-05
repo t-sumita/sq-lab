@@ -4,76 +4,117 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Guide — Squash Laboratory</title>
-<link rel="stylesheet" href="css/style.css?v=0.5.0">
+<link rel="stylesheet" href="css/style.css?v=0.6.0">
 </head>
 <body>
 
+<div class="sticky-top">
 <header class="site-header">
   <a class="site-header__brand" href="index.html">
     <img class="site-header__logo" src="assets/subu-pic-header.png" alt=""
          onerror="this.style.display='none'">
     <span class="site-header__name">Squash Laboratory</span>
   </a>
+  <p class="site-header__tagline" data-i18n="headerTagline"></p>
   <div class="site-header__actions">
     <button id="lang-toggle" class="lang-toggle" type="button">EN</button>
   </div>
 </header>
+</div>
 
 <main id="main" class="guide">
   <a class="guide__back" href="index.html" data-i18n="guideBack"></a>
   <h1 data-i18n="guideTitle"></h1>
   <p class="notice notice--info" data-i18n="guideIntro"></p>
 
+  <nav class="toc" aria-label="table of contents">
+    <p data-i18n="guideTocTitle"></p>
+    <ul class="toc-groups">
+      <li class="toc-group">
+        <p class="toc-group-label" data-i18n="guideTocGroupStart"></p>
+        <ul>
+          <li><a href="#overview" data-i18n="guideOverviewTitle"></a></li>
+        </ul>
+      </li>
+      <li class="toc-group">
+        <p class="toc-group-label" data-i18n="guideTocGroupMetrics"></p>
+        <ul>
+          <li><a href="#summary" data-i18n="summarySectionTitle"></a></li>
+          <li><a href="#distance" data-i18n="metricDistance"></a></li>
+          <li><a href="#work-rate" data-i18n="metricWorkRate"></a></li>
+          <li><a href="#t-dominance" data-i18n="metricTDominance"></a></li>
+          <li><a href="#coverage" data-i18n="metricCoverage"></a></li>
+          <li><a href="#avg-speed" data-i18n="metricAvgSpeed"></a></li>
+        </ul>
+      </li>
+      <li class="toc-group">
+        <p class="toc-group-label" data-i18n="guideTocGroupViews"></p>
+        <ul>
+          <li><a href="#heatmap" data-i18n="guideHeatmapTitle"></a></li>
+          <li><a href="#replay" data-i18n="guideReplayTitle"></a></li>
+        </ul>
+      </li>
+      <li class="toc-group">
+        <p class="toc-group-label" data-i18n="guideTocGroupData"></p>
+        <ul>
+          <li><a href="#glossary" data-i18n="guideGlossaryTitle"></a></li>
+          <li><a href="#schema" data-i18n="guideSchemaTitle"></a></li>
+          <li><a href="#names" data-i18n="guideNamesTitle"></a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+
+  <section id="overview">
+    <h2 data-i18n="guideOverviewTitle"></h2>
+    <p data-i18n="guideOverviewBody"></p>
+    <p class="notice notice--info" data-i18n="guideOverviewVideoNote"></p>
+  </section>
+
+  <h2 data-i18n="guideFeaturesTitle" class="guide__section-divider"></h2>
+
   <section id="summary">
-    <h2 data-i18n="summarySectionTitle"></h2>
+    <h3 data-i18n="summarySectionTitle"></h3>
     <p data-i18n="guideSummaryIntro"></p>
   </section>
 
   <section id="distance">
-    <h2 data-i18n="metricDistance"></h2>
+    <h3 data-i18n="metricDistance"></h3>
     <p data-i18n="guideDistance"></p>
   </section>
 
   <section id="work-rate">
-    <h2 data-i18n="metricWorkRate"></h2>
+    <h3 data-i18n="metricWorkRate"></h3>
     <p data-i18n="guideWorkRate"></p>
     <p class="guide__see-also">
       <span data-i18n="seeAlsoLabel"></span>
-      <a href="#main-camera" data-i18n="guideMainCameraTitle"></a>
+      <a href="#glossary-main-camera" data-i18n="glossaryMainCameraTerm"></a>
     </p>
   </section>
 
   <section id="t-dominance">
-    <h2 data-i18n="metricTDominance"></h2>
+    <h3 data-i18n="metricTDominance"></h3>
     <p></p>
     <p class="guide__see-also">
       <span data-i18n="seeAlsoLabel"></span>
-      <a href="#main-camera" data-i18n="guideMainCameraTitle"></a>
+      <a href="#glossary-tzone" data-i18n="glossaryTZoneTerm"></a>
+      &middot;
+      <a href="#glossary-main-camera" data-i18n="glossaryMainCameraTerm"></a>
     </p>
   </section>
 
   <section id="coverage">
-    <h2 data-i18n="metricCoverage"></h2>
+    <h3 data-i18n="metricCoverage"></h3>
     <p data-i18n="guideCoverage"></p>
   </section>
 
   <section id="avg-speed">
-    <h2 data-i18n="metricAvgSpeed"></h2>
+    <h3 data-i18n="metricAvgSpeed"></h3>
     <p data-i18n="guideAvgSpeed"></p>
   </section>
 
-  <section id="unassigned">
-    <h2 data-i18n="guideUnassignedTitle"></h2>
-    <p data-i18n="guideUnassignedBody"></p>
-  </section>
-
-  <section id="main-camera">
-    <h2 data-i18n="guideMainCameraTitle"></h2>
-    <p data-i18n="guideMainCameraBody"></p>
-  </section>
-
   <section id="heatmap">
-    <h2 data-i18n="guideHeatmapTitle"></h2>
+    <h3 data-i18n="guideHeatmapTitle"></h3>
     <p data-i18n="guideHeatmapBody"></p>
     <p class="guide__see-also">
       <span data-i18n="seeAlsoLabel"></span>
@@ -82,14 +123,33 @@
   </section>
 
   <section id="replay">
-    <h2 data-i18n="guideReplayTitle"></h2>
+    <h3 data-i18n="guideReplayTitle"></h3>
     <p data-i18n="guideReplayBody"></p>
     <p class="guide__see-also">
       <span data-i18n="seeAlsoLabel"></span>
-      <a href="#unassigned" data-i18n="guideUnassignedTitle"></a>
+      <a href="#glossary-unassigned" data-i18n="guideUnassignedTitle"></a>
       &middot;
-      <a href="#main-camera" data-i18n="guideMainCameraTitle"></a>
+      <a href="#glossary-main-camera" data-i18n="glossaryMainCameraTerm"></a>
+      &middot;
+      <a href="#glossary-analyzed-range" data-i18n="glossaryAnalyzedRangeTerm"></a>
     </p>
+  </section>
+
+  <section id="glossary">
+    <h2 data-i18n="guideGlossaryTitle"></h2>
+    <dl class="guide__glossary">
+      <dt id="glossary-unassigned" data-i18n="guideUnassignedTitle"></dt>
+      <dd data-i18n="guideUnassignedBody"></dd>
+
+      <dt id="glossary-main-camera" data-i18n="glossaryMainCameraTerm"></dt>
+      <dd data-i18n="guideMainCameraBody"></dd>
+
+      <dt id="glossary-tzone" data-i18n="glossaryTZoneTerm"></dt>
+      <dd data-i18n="glossaryTZoneBody"></dd>
+
+      <dt id="glossary-analyzed-range" data-i18n="glossaryAnalyzedRangeTerm"></dt>
+      <dd data-i18n="glossaryAnalyzedRangeBody"></dd>
+    </dl>
   </section>
 
   <section id="schema">
@@ -105,17 +165,17 @@
   <a class="guide__back" href="index.html" data-i18n="guideBack"></a>
 </main>
 
-<footer class="site-footer">
-  <p class="site-footer__links">
-    <span class="site-footer__copyright">&copy; 2026 Subutomo Dev</span>
-    <span aria-hidden="true">&middot;</span>
+<div class="footer-right">
+  <div class="support-links" aria-label="support links">
     <a href="https://ko-fi.com/subutomo" target="_blank" rel="noopener" data-i18n="footerKofi"></a>
-    <span aria-hidden="true">&middot;</span>
+    <span class="support-sep" aria-hidden="true">&middot;</span>
     <a href="https://github.com/sponsors/t-sumita" target="_blank" rel="noopener" data-i18n="footerSponsors"></a>
-    <span aria-hidden="true">&middot;</span>
-    <a href="https://github.com/t-sumita/sq-lab/issues" target="_blank" rel="noopener" data-i18n="footerFeedback"></a>
-  </p>
-</footer>
+  </div>
+  <a class="feedback-link"
+     href="https://docs.google.com/forms/d/e/1FAIpQLSf_thpSe4TfQ_EloElTBsCiMKgypYTKLCs0dSTmaF_FXZSvIg/viewform?usp=pp_url&entry.2036331541=Squash+Laboratory+(sq-lab)"
+     target="_blank" rel="noopener noreferrer" data-i18n="footerFeedback"></a>
+</div>
+<div class="footer-bar" aria-hidden="true"></div>
 
 <script>
   window.SUBUTOMO_BADGE_CONFIG = {
@@ -127,9 +187,9 @@
     onSecretAction: null
   };
 </script>
-<script src="./assets/subutomo-badge.js?v=0.5.0"></script>
+<script src="./assets/subutomo-badge.js?v=0.6.0"></script>
 
-<script src="js/i18n.js?v=0.5.0"></script>
+<script src="js/i18n.js?v=0.6.0"></script>
 <script>
   (function () {
     // T-zoneのデフォルト値(the Analyzer v0.5.1 確定値)。guide.htmlは特定の

@@ -221,10 +221,13 @@ window.SQLab.Replay = (function () {
     });
     controls.appendChild(trailWrap);
 
-    var coverageCanvas = document.createElement("canvas");
-    coverageCanvas.className = "replay__coverage";
-    container.appendChild(coverageCanvas);
-
+    // v0.6.0: シークスライダーが上・データ充足ストリップが下(旧: 逆順)。
+    // スライダーの両端に開始/終了時刻を表示する(現在時刻はcontrols内のtimeLabelに表示済み)。
+    var seekRow = document.createElement("div");
+    seekRow.className = "replay__seek-row";
+    var seekStartLabel = document.createElement("span");
+    seekStartLabel.className = "replay__seek-time";
+    seekStartLabel.textContent = fmtTime(domain.start);
     var seek = document.createElement("input");
     seek.type = "range";
     seek.className = "replay__seek";
@@ -232,7 +235,37 @@ window.SQLab.Replay = (function () {
     seek.max = String(domain.end);
     seek.step = "0.05";
     seek.value = "0";
-    container.appendChild(seek);
+    var seekEndLabel = document.createElement("span");
+    seekEndLabel.className = "replay__seek-time";
+    seekEndLabel.textContent = fmtTime(domain.end);
+    seekRow.appendChild(seekStartLabel);
+    seekRow.appendChild(seek);
+    seekRow.appendChild(seekEndLabel);
+    container.appendChild(seekRow);
+
+    // データ充足ストリップ: 各帯の短いラベル+ⓘ(用語集「解析済み範囲」へリンク)。
+    var coverageWrap = document.createElement("div");
+    coverageWrap.className = "replay__coverage-wrap";
+    var coverageLabels = document.createElement("div");
+    coverageLabels.className = "replay__coverage-labels";
+    var p1CoverageLabel = document.createElement("span");
+    p1CoverageLabel.className = "replay__coverage-label replay__coverage-label--red";
+    p1CoverageLabel.textContent = window.SQLab.t("coverageP1Label");
+    var p2CoverageLabel = document.createElement("span");
+    p2CoverageLabel.className = "replay__coverage-label replay__coverage-label--blue";
+    p2CoverageLabel.textContent = window.SQLab.t("coverageP2Label");
+    var coverageInfo = document.createElement("a");
+    coverageInfo.className = "info-icon";
+    coverageInfo.href = "guide.html#glossary-analyzed-range";
+    coverageInfo.textContent = "ⓘ";
+    coverageLabels.appendChild(p1CoverageLabel);
+    coverageLabels.appendChild(p2CoverageLabel);
+    coverageLabels.appendChild(coverageInfo);
+    var coverageCanvas = document.createElement("canvas");
+    coverageCanvas.className = "replay__coverage";
+    coverageWrap.appendChild(coverageLabels);
+    coverageWrap.appendChild(coverageCanvas);
+    container.appendChild(coverageWrap);
 
     var state = { isPlaying: false, t: 0, speed: 1, trailMode: "5s" };
 
