@@ -25,7 +25,7 @@
       document.getElementById("summary-cards"),
       data
     );
-    window.SQLab.Heatmap.render(document.getElementById("heatmap-section"), data);
+    window.SQLab.Views.render(document.getElementById("heatmap-section"), data);
   }
 
   function showIntro() {
@@ -62,7 +62,7 @@
         document.getElementById("summary-cards"),
         lastData
       );
-      window.SQLab.Heatmap.render(document.getElementById("heatmap-section"), lastData);
+      window.SQLab.Views.render(document.getElementById("heatmap-section"), lastData);
     }
   }
 

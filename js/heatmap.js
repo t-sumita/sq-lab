@@ -1,15 +1,16 @@
 // heatmap.js — ヒートマップ描画(並置/重畳・補間・T-zone表示)。
 // Court モジュール(court.js)を使ってコートを描き、その上にヒートマップを重ねる。
+//
+// S3でタブ構造(Side by Side / Overlay / Replay)を views.js に引き上げたため、
+// このモジュールは「与えられた canvasArea/legendArea に描画する」低レベルAPI
+// (renderSideBySide / renderOverlay)のみを提供する。タブ・T-zoneトグル・
+// リサイズ監視は views.js が一元管理する。
 window.SQLab = window.SQLab || {};
 
 window.SQLab.Heatmap = (function () {
   var MAX_ALPHA = 0.85;
   var COLOR_P1 = [197, 48, 48]; // --color-p1 (#c53030) と同一
   var COLOR_P2 = [43, 108, 176]; // --color-p2 (#2b6cb0) と同一
-
-  // render() は言語切替のたびに再呼び出しされるため、resizeリスナーが
-  // 積み重ならないよう直前のものを解除してから登録し直す。
-  var currentResizeHandler = null;
 
   // 両プレイヤー共通の最大値(正規化の基準)。「同じ濃さ=同じ秒数」を保証する。
   function commonMax(gridP1, gridP2) {
@@ -178,16 +179,12 @@ window.SQLab.Heatmap = (function () {
   }
 
   // ---------------------------------------------------------------------
-  // 高レベルAPI: セクション全体(タブ・トグル・キャンバス・凡例)を構築する
+  // views.js から呼ばれる描画API(タブ・トグル・リサイズ監視は持たない)
   // ---------------------------------------------------------------------
 
-  function render(container, data) {
-    var p1 = data.players.find(function (p) {
-      return p.id === "P1";
-    });
-    var p2 = data.players.find(function (p) {
-      return p.id === "P2";
-    });
+  function renderSideBySide(canvasArea, legendArea, data, showTZone) {
+    var p1 = data.players.find(function (p) { return p.id === "P1"; });
+    var p2 = data.players.find(function (p) { return p.id === "P2"; });
     if (!p1 || !p2 || !p1.metrics.heatmap || !p2.metrics.heatmap) return;
 
     var gridP1 = p1.metrics.heatmap.grid;
@@ -195,163 +192,73 @@ window.SQLab.Heatmap = (function () {
     var maxVal = commonMax(gridP1, gridP2);
     var tZone = (data.metrics_params && data.metrics_params.t_zone) || null;
 
-    var state = { mode: "side", showTZone: true };
+    canvasArea.classList.add("heatmap__canvases--side");
 
-    container.innerHTML = "";
+    var p1Wrap = document.createElement("div");
+    p1Wrap.className = "heatmap__court-wrap";
+    var p1Label = document.createElement("div");
+    p1Label.className = "heatmap__court-label heatmap__court-label--red";
+    p1Label.textContent = (p1.display_name || p1.id) + " (P1)";
+    var p1Canvas = document.createElement("canvas");
+    p1Wrap.appendChild(p1Label);
+    p1Wrap.appendChild(p1Canvas);
 
-    var title = document.createElement("h2");
-    title.className = "heatmap__title";
-    title.textContent = window.SQLab.t("heatmapSectionTitle");
-    container.appendChild(title);
+    var p2Wrap = document.createElement("div");
+    p2Wrap.className = "heatmap__court-wrap";
+    var p2Label = document.createElement("div");
+    p2Label.className = "heatmap__court-label heatmap__court-label--blue";
+    p2Label.textContent = (p2.display_name || p2.id) + " (P2)";
+    var p2Canvas = document.createElement("canvas");
+    p2Wrap.appendChild(p2Label);
+    p2Wrap.appendChild(p2Canvas);
 
-    // --- モード切替タブ ---
-    var tabs = document.createElement("div");
-    tabs.className = "heatmap__tabs";
-    var sideTab = document.createElement("button");
-    sideTab.type = "button";
-    sideTab.className = "tab-btn tab-btn--active";
-    sideTab.textContent = window.SQLab.t("modeSideBySide");
-    var overlayTab = document.createElement("button");
-    overlayTab.type = "button";
-    overlayTab.className = "tab-btn";
-    overlayTab.textContent = window.SQLab.t("modeOverlay");
-    tabs.appendChild(sideTab);
-    tabs.appendChild(overlayTab);
-    container.appendChild(tabs);
+    canvasArea.appendChild(p1Wrap);
+    canvasArea.appendChild(p2Wrap);
 
-    // --- T-zone トグル ---
-    var tZoneRow = document.createElement("label");
-    tZoneRow.className = "tzone-toggle";
-    var tZoneCheckbox = document.createElement("input");
-    tZoneCheckbox.type = "checkbox";
-    tZoneCheckbox.checked = true;
-    var tZoneLabelText = document.createElement("span");
-    tZoneLabelText.textContent = window.SQLab.t("tZoneToggleLabel");
-    tZoneRow.appendChild(tZoneCheckbox);
-    tZoneRow.appendChild(tZoneLabelText);
-    container.appendChild(tZoneRow);
+    var w = p1Wrap.clientWidth || canvasArea.clientWidth || 320;
+    paintSingle(p1Canvas, w, gridP1, maxVal, COLOR_P1, tZone, showTZone);
+    paintSingle(p2Canvas, w, gridP2, maxVal, COLOR_P2, tZone, showTZone);
 
-    // --- キャンバスエリア ---
-    var canvasArea = document.createElement("div");
-    canvasArea.className = "heatmap__canvases";
-    container.appendChild(canvasArea);
+    var legendRow = document.createElement("div");
+    legendRow.className = "heatmap__legend-row";
+    var l1 = document.createElement("div");
+    var l2 = document.createElement("div");
+    legendRow.appendChild(l1);
+    legendRow.appendChild(l2);
+    legendArea.appendChild(legendRow);
+    renderLegendBar(l1, COLOR_P1, maxVal, window.SQLab.t("legendDwellTime"));
+    renderLegendBar(l2, COLOR_P2, maxVal, window.SQLab.t("legendDwellTime"));
+  }
 
-    // --- 凡例エリア ---
-    var legendArea = document.createElement("div");
-    legendArea.className = "heatmap__legend-area";
-    container.appendChild(legendArea);
+  function renderOverlay(canvasArea, legendArea, data, showTZone) {
+    var p1 = data.players.find(function (p) { return p.id === "P1"; });
+    var p2 = data.players.find(function (p) { return p.id === "P2"; });
+    if (!p1 || !p2 || !p1.metrics.heatmap || !p2.metrics.heatmap) return;
 
-    function containerWidth() {
-      var w = canvasArea.clientWidth || container.clientWidth || 320;
-      return w;
-    }
+    var gridP1 = p1.metrics.heatmap.grid;
+    var gridP2 = p2.metrics.heatmap.grid;
+    var maxVal = commonMax(gridP1, gridP2);
+    var tZone = (data.metrics_params && data.metrics_params.t_zone) || null;
 
-    function buildSideBySideDom() {
-      canvasArea.innerHTML = "";
-      canvasArea.classList.remove("heatmap__canvases--overlay");
-      canvasArea.classList.add("heatmap__canvases--side");
+    canvasArea.classList.add("heatmap__canvases--overlay");
 
-      var p1Wrap = document.createElement("div");
-      p1Wrap.className = "heatmap__court-wrap";
-      var p1Label = document.createElement("div");
-      p1Label.className = "heatmap__court-label heatmap__court-label--red";
-      p1Label.textContent = (p1.display_name || p1.id) + " (P1)";
-      var p1Canvas = document.createElement("canvas");
-      p1Wrap.appendChild(p1Label);
-      p1Wrap.appendChild(p1Canvas);
+    var wrap = document.createElement("div");
+    wrap.className = "heatmap__court-wrap";
+    var canvas = document.createElement("canvas");
+    wrap.appendChild(canvas);
+    canvasArea.appendChild(wrap);
 
-      var p2Wrap = document.createElement("div");
-      p2Wrap.className = "heatmap__court-wrap";
-      var p2Label = document.createElement("div");
-      p2Label.className = "heatmap__court-label heatmap__court-label--blue";
-      p2Label.textContent = (p2.display_name || p2.id) + " (P2)";
-      var p2Canvas = document.createElement("canvas");
-      p2Wrap.appendChild(p2Label);
-      p2Wrap.appendChild(p2Canvas);
+    var w = wrap.clientWidth || canvasArea.clientWidth || 320;
+    paintOverlay(canvas, w, gridP1, gridP2, maxVal, tZone, showTZone);
 
-      canvasArea.appendChild(p1Wrap);
-      canvasArea.appendChild(p2Wrap);
-
-      return { p1Canvas: p1Canvas, p2Canvas: p2Canvas };
-    }
-
-    function buildOverlayDom() {
-      canvasArea.innerHTML = "";
-      canvasArea.classList.remove("heatmap__canvases--side");
-      canvasArea.classList.add("heatmap__canvases--overlay");
-
-      var wrap = document.createElement("div");
-      wrap.className = "heatmap__court-wrap";
-      var canvas = document.createElement("canvas");
-      wrap.appendChild(canvas);
-      canvasArea.appendChild(wrap);
-
-      return { canvas: canvas };
-    }
-
-    function redraw() {
-      if (state.mode === "side") {
-        var refs = buildSideBySideDom();
-        // 幅計算のため一旦レイアウトさせてから描画(2カラム/縦積みでも正しい幅になる)
-        var w = refs.p1Canvas.parentElement.clientWidth || containerWidth();
-        paintSingle(refs.p1Canvas, w, gridP1, maxVal, COLOR_P1, tZone, state.showTZone);
-        paintSingle(refs.p2Canvas, w, gridP2, maxVal, COLOR_P2, tZone, state.showTZone);
-
-        legendArea.innerHTML = "";
-        var legendRow = document.createElement("div");
-        legendRow.className = "heatmap__legend-row";
-        var l1 = document.createElement("div");
-        var l2 = document.createElement("div");
-        legendRow.appendChild(l1);
-        legendRow.appendChild(l2);
-        legendArea.appendChild(legendRow);
-        renderLegendBar(l1, COLOR_P1, maxVal, window.SQLab.t("legendDwellTime"));
-        renderLegendBar(l2, COLOR_P2, maxVal, window.SQLab.t("legendDwellTime"));
-      } else {
-        var oref = buildOverlayDom();
-        var ow = oref.canvas.parentElement.clientWidth || containerWidth();
-        paintOverlay(oref.canvas, ow, gridP1, gridP2, maxVal, tZone, state.showTZone);
-
-        legendArea.innerHTML = "";
-        renderOverlayLegend(legendArea);
-      }
-    }
-
-    sideTab.addEventListener("click", function () {
-      state.mode = "side";
-      sideTab.classList.add("tab-btn--active");
-      overlayTab.classList.remove("tab-btn--active");
-      redraw();
-    });
-    overlayTab.addEventListener("click", function () {
-      state.mode = "overlay";
-      overlayTab.classList.add("tab-btn--active");
-      sideTab.classList.remove("tab-btn--active");
-      redraw();
-    });
-    tZoneCheckbox.addEventListener("change", function () {
-      state.showTZone = tZoneCheckbox.checked;
-      redraw();
-    });
-
-    if (currentResizeHandler) {
-      window.removeEventListener("resize", currentResizeHandler);
-      currentResizeHandler = null;
-    }
-    var resizeTimer = null;
-    currentResizeHandler = function () {
-      if (resizeTimer) clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(redraw, 150);
-    };
-    window.addEventListener("resize", currentResizeHandler);
-
-    redraw();
+    renderOverlayLegend(legendArea);
   }
 
   return {
     commonMax: commonMax,
     overlayColorFn: overlayColorFn,
     buildOffscreen: buildOffscreen,
-    render: render,
+    renderSideBySide: renderSideBySide,
+    renderOverlay: renderOverlay,
   };
 })();
