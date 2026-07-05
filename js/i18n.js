@@ -60,7 +60,8 @@ window.SQLab.I18N = {
       "Overlay blends both players on one court: red where only P1 spent time, blue where only P2 did, and purple where both did — making each player's exclusive territory visible at a glance.",
     guideReplayTitle: "Replay",
     guideReplayBody:
-      "Replay animates each player's position over time. When a player's position is genuinely missing (not just a normal gap between samples), their dot is hidden rather than frozen in place — the strip below the seek bar shows exactly which time ranges have data for each player, and which ranges were outside the main camera view.",
+      "Replay animates each player's position over time. When a player's position is genuinely missing (not just a normal gap between samples), their dot is hidden rather than frozen in place — the strip below the seek bar shows exactly which time ranges have data for each player, and which ranges were outside the main camera view. " +
+      "Each position is the player's feet, not their head or torso — specifically, the bottom-center of their detection box, projected onto the court.",
     guideSchemaTitle: "Supported data format",
     guideSchemaBody: "This viewer only accepts result.json files matching schema version 0.2. Older or newer incompatible versions will show an error naming both the supported and the loaded version.",
     guideNamesTitle: "Player names",
@@ -125,7 +126,8 @@ window.SQLab.I18N = {
     guideReplayBody:
       "リプレイは各プレイヤーの位置を時間とともにアニメーション再生します。位置データが本当に存在しない" +
       "(通常のサンプル間隔ではなく実際の欠損)場合は、丸を最後の位置に留めるのではなく非表示にします。" +
-      "シークバー下の帯は、各プレイヤーのデータがある時間帯と、主カメラ外だった時間帯を示します。",
+      "シークバー下の帯は、各プレイヤーのデータがある時間帯と、主カメラ外だった時間帯を示します。" +
+      "位置は頭や胴体ではなく足元(検出枠下辺中央のコート投影点)を基準としています。",
     guideSchemaTitle: "対応データ形式",
     guideSchemaBody: "本ビューアはスキーマバージョン0.2のresult.jsonのみに対応しています。それ以外のバージョンは、対応バージョンと読み込まれたバージョンを併記したエラーを表示します。",
     guideNamesTitle: "プレイヤー名について",
