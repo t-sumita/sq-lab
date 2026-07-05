@@ -33,11 +33,22 @@ window.SQLab.Views = (function () {
 
     var tabs = document.createElement("div");
     tabs.className = "heatmap__tabs";
+
+    // Side by Side / Overlay を「Heatmap」グループとして視覚的に括る(v0.5.0)。
+    var heatmapGroup = document.createElement("div");
+    heatmapGroup.className = "heatmap__tab-group";
+    var heatmapGroupLabel = document.createElement("span");
+    heatmapGroupLabel.className = "heatmap__tab-group-label";
+    heatmapGroupLabel.textContent = window.SQLab.t("heatmapGroupLabel") + ":";
     var sideTab = tabBtn(window.SQLab.t("modeSideBySide"), state.mode === "side");
     var overlayTab = tabBtn(window.SQLab.t("modeOverlay"), state.mode === "overlay");
+    heatmapGroup.appendChild(heatmapGroupLabel);
+    heatmapGroup.appendChild(sideTab);
+    heatmapGroup.appendChild(overlayTab);
+
     var replayTab = tabBtn(window.SQLab.t("modeReplay"), state.mode === "replay");
-    tabs.appendChild(sideTab);
-    tabs.appendChild(overlayTab);
+
+    tabs.appendChild(heatmapGroup);
     tabs.appendChild(replayTab);
     container.appendChild(tabs);
 

@@ -1,6 +1,8 @@
 // app.js — 画面制御(イベント配線・言語切替・エラー表示)。
+// v0.5.0: 初回表示はデモデータを自動表示し、読込UIは上部ボタンから展開する方式へ変更。
 (function () {
   var lastData = null; // 言語切替・名前編集時に再描画するため保持
+  var isDemo = true; // 現在表示中がデモデータかどうか(上部バナー表示制御用)
 
   function showError(key, vars) {
     var box = document.getElementById("error-box");
@@ -14,21 +16,47 @@
     box.textContent = "";
   }
 
+  function updateTopNotice() {
+    var textEl = document.getElementById("top-notice-text");
+    var btn = document.getElementById("top-notice-btn");
+    if (isDemo) {
+      textEl.hidden = false;
+      textEl.textContent = window.SQLab.t("demoBannerText");
+    } else {
+      textEl.hidden = true;
+    }
+    btn.textContent = window.SQLab.t("loadJsonButton");
+  }
+
+  function closeLoadPanel() {
+    document.getElementById("load-panel").hidden = true;
+  }
+
+  function openLoadPanel() {
+    document.getElementById("load-panel").hidden = false;
+  }
+
   // 読込中に予期しない例外が起きても「無反応に見える」状態にせず、
-  // 必ずエラー表示か結果表示のどちらかに帰着させる(P0対応)。
-  function showResult(data) {
+  // 必ずエラー表示か結果表示のどちらかに帰着させる(P0対応、v0.4.0から継続)。
+  function showResult(data, demo) {
     try {
       lastData = data;
+      isDemo = !!demo;
       clearError();
-      document.getElementById("intro-panel").hidden = true;
+      closeLoadPanel();
       document.getElementById("result-panel").hidden = false;
+      updateTopNotice();
       renderAll();
     } catch (e) {
       lastData = null;
       document.getElementById("result-panel").hidden = true;
-      document.getElementById("intro-panel").hidden = false;
+      openLoadPanel();
       showError("errorGeneric", {});
     }
+  }
+
+  function showResultFromFile(data) {
+    showResult(data, false);
   }
 
   function renderAll() {
@@ -42,16 +70,9 @@
     window.SQLab.Views.render(document.getElementById("heatmap-section"), lastData);
   }
 
-  function showIntro() {
-    lastData = null;
-    clearError();
-    document.getElementById("result-panel").hidden = true;
-    document.getElementById("intro-panel").hidden = false;
-  }
-
   function handleFile(file) {
     if (!file) return;
-    window.SQLab.Loader.loadFromFile(file, showResult, showError);
+    window.SQLab.Loader.loadFromFile(file, showResultFromFile, showError);
   }
 
   // テンプレート準拠: ボタンには表示中の言語の2文字のみを表示する(EN/JA相互トグル)。
@@ -67,6 +88,7 @@
     document.documentElement.lang = lang;
     window.SQLab.applyStaticI18n(document);
     updateLangButton();
+    updateTopNotice();
     renderAll(); // 現在表示中のサマリー/ヒートマップ/リプレイも言語を反映して再描画
   }
 
@@ -76,12 +98,10 @@
 
     document.getElementById("app-version").textContent = "v" + window.SQLab.APP_VERSION;
 
-    var introPanel = document.getElementById("intro-panel");
     var fileInput = document.getElementById("file-input");
     var chooseBtn = document.getElementById("choose-file-btn");
-    var demoBtn = document.getElementById("demo-btn");
-    var backBtn = document.getElementById("back-btn");
     var langToggle = document.getElementById("lang-toggle");
+    var topNoticeBtn = document.getElementById("top-notice-btn");
 
     chooseBtn.addEventListener("click", function () {
       fileInput.click();
@@ -92,24 +112,6 @@
       handleFile(evt.target.files[0]);
     });
 
-    // イントロパネル全体をドロップ領域にする(P0対応: 点線枠の小さな
-    // drop-zone div だけでなく、パネルのどこにドロップしても読み込める)。
-    introPanel.addEventListener("dragover", function (evt) {
-      evt.preventDefault();
-      introPanel.classList.add("intro-panel--drag-active");
-    });
-    introPanel.addEventListener("dragleave", function (evt) {
-      if (evt.target === introPanel) {
-        introPanel.classList.remove("intro-panel--drag-active");
-      }
-    });
-    introPanel.addEventListener("drop", function (evt) {
-      evt.preventDefault();
-      introPanel.classList.remove("intro-panel--drag-active");
-      var file = evt.dataTransfer.files && evt.dataTransfer.files[0];
-      handleFile(file);
-    });
-
     var dropZone = document.getElementById("drop-zone");
     dropZone.addEventListener("keydown", function (evt) {
       if (evt.key === "Enter" || evt.key === " ") {
@@ -118,16 +120,41 @@
       }
     });
 
-    demoBtn.addEventListener("click", function () {
-      window.SQLab.Loader.loadDemo(showResult, showError);
+    // ページ全体をドロップ領域にする(読込UIを開いていなくても、
+    // どこにファイルをドロップしても読み込める)。
+    document.body.addEventListener("dragover", function (evt) {
+      evt.preventDefault();
+      document.body.classList.add("body--drag-active");
+    });
+    document.body.addEventListener("dragleave", function (evt) {
+      if (evt.target === document.body) {
+        document.body.classList.remove("body--drag-active");
+      }
+    });
+    document.body.addEventListener("drop", function (evt) {
+      evt.preventDefault();
+      document.body.classList.remove("body--drag-active");
+      var file = evt.dataTransfer.files && evt.dataTransfer.files[0];
+      if (file) {
+        openLoadPanel();
+        handleFile(file);
+      }
     });
 
-    backBtn.addEventListener("click", showIntro);
+    topNoticeBtn.addEventListener("click", function () {
+      var panel = document.getElementById("load-panel");
+      panel.hidden = !panel.hidden;
+    });
 
     langToggle.addEventListener("click", function () {
       var next = (window.SQLab.currentLang === "ja") ? "en" : "ja";
       applyLanguage(next);
     });
+
+    // 初回表示はデモデータの分析結果を自動表示する(v0.5.0)。
+    window.SQLab.Loader.loadDemo(function (data) {
+      showResult(data, true);
+    }, showError);
   }
 
   if (document.readyState === "loading") {

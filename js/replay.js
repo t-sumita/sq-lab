@@ -8,7 +8,7 @@ window.SQLab.Replay = (function () {
   var COLOR_P2 = "#2b6cb0";
   var GAP_THRESHOLD_S = 0.3; // これを超える隣接サンプル間隔は「欠損」扱い
   var TRAIL_SECONDS = 5;
-  var SPEEDS = [1, 2, 4, 8];
+  var SPEEDS = [1, 2, 4, 8, 16];
 
   var rafId = null;
   var resizeHandler = null;
@@ -199,16 +199,27 @@ window.SQLab.Replay = (function () {
     });
     controls.appendChild(speedsWrap);
 
-    var trailRow = document.createElement("label");
-    trailRow.className = "tzone-toggle";
-    var trailCheckbox = document.createElement("input");
-    trailCheckbox.type = "checkbox";
-    trailCheckbox.checked = true;
-    var trailLabelText = document.createElement("span");
-    trailLabelText.textContent = window.SQLab.t("trailToggleLabel");
-    trailRow.appendChild(trailCheckbox);
-    trailRow.appendChild(trailLabelText);
-    controls.appendChild(trailRow);
+    // トレイル3択: Off / 5s / All(v0.5.0)。
+    var trailWrap = document.createElement("div");
+    trailWrap.className = "replay__trail-group";
+    var trailLabelEl = document.createElement("span");
+    trailLabelEl.className = "heatmap__tab-group-label";
+    trailLabelEl.textContent = window.SQLab.t("trailLabel") + ":";
+    trailWrap.appendChild(trailLabelEl);
+    var TRAIL_MODES = [
+      { key: "off", labelKey: "trailOff" },
+      { key: "5s", labelKey: "trailShort" },
+      { key: "all", labelKey: "trailAll" },
+    ];
+    var trailButtons = TRAIL_MODES.map(function (m) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "replay__btn tab-btn" + (m.key === "5s" ? " tab-btn--active" : "");
+      b.textContent = window.SQLab.t(m.labelKey);
+      trailWrap.appendChild(b);
+      return b;
+    });
+    controls.appendChild(trailWrap);
 
     var coverageCanvas = document.createElement("canvas");
     coverageCanvas.className = "replay__coverage";
@@ -223,14 +234,72 @@ window.SQLab.Replay = (function () {
     seek.value = "0";
     container.appendChild(seek);
 
-    var state = { isPlaying: false, t: 0, speed: 1, showTrail: true };
+    var state = { isPlaying: false, t: 0, speed: 1, trailMode: "5s" };
 
     var Court = window.SQLab.Court;
     var setup = null;
 
+    // "All"モード用のオフスクリーン累積canvas。再生が進むたびに新規区間だけを
+    // 追記し、毎フレーム全軌跡を引き直さないことで60fpsを維持する(巻き戻し
+    // 時のみ全体を作り直す)。
+    var allTrailCanvas = null;
+    var allTrailCtx = null;
+    var accumulatedT = 0;
+
+    function resetAllTrailCanvas() {
+      allTrailCanvas = document.createElement("canvas");
+      allTrailCanvas.width = canvas.width;
+      allTrailCanvas.height = canvas.height;
+      allTrailCtx = allTrailCanvas.getContext("2d");
+      var dpr = window.devicePixelRatio || 1;
+      allTrailCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      accumulatedT = 0;
+    }
+
+    function drawTrailRange(ctx, player, color, fromT, toT) {
+      var positions = player.positions || [];
+      var prev = null;
+      for (var i = 0; i < positions.length; i++) {
+        var p = positions[i];
+        if (p.t <= fromT) {
+          prev = p;
+          continue;
+        }
+        if (p.t > toT) break;
+        if (prev && p.t - prev.t <= GAP_THRESHOLD_S) {
+          ctx.save();
+          ctx.strokeStyle = color;
+          ctx.globalAlpha = 0.5;
+          ctx.lineWidth = Math.max(1, setup.scale * 0.008);
+          ctx.beginPath();
+          ctx.moveTo(prev.x_m * setup.scale, prev.y_m * setup.scale);
+          ctx.lineTo(p.x_m * setup.scale, p.y_m * setup.scale);
+          ctx.stroke();
+          ctx.restore();
+        }
+        prev = p;
+      }
+    }
+
+    function accumulateAllTrail(targetT) {
+      if (!allTrailCanvas) resetAllTrailCanvas();
+      if (targetT < accumulatedT - 1e-6) {
+        // 巻き戻し: 作り直す(t=0からtargetTまで一括描画)
+        resetAllTrailCanvas();
+        drawTrailRange(allTrailCtx, p1, COLOR_P1, -1, targetT);
+        drawTrailRange(allTrailCtx, p2, COLOR_P2, -1, targetT);
+        accumulatedT = targetT;
+      } else if (targetT > accumulatedT + 1e-6) {
+        drawTrailRange(allTrailCtx, p1, COLOR_P1, accumulatedT, targetT);
+        drawTrailRange(allTrailCtx, p2, COLOR_P2, accumulatedT, targetT);
+        accumulatedT = targetT;
+      }
+    }
+
     function setupIfNeeded() {
       var w = canvasWrap.clientWidth || 320;
       setup = Court.setupCanvas(canvas, w);
+      resetAllTrailCanvas();
     }
     setupIfNeeded();
     drawCoverageStrip(coverageCanvas, canvasWrap.clientWidth || 320, domain, p1, p2, data.analyzed_segments);
@@ -239,7 +308,14 @@ window.SQLab.Replay = (function () {
       var ctx = setup.ctx;
       Court.drawFloor(ctx, setup.scale, "#ffffff");
 
-      if (state.showTrail) {
+      if (state.trailMode === "all") {
+        accumulateAllTrail(state.t);
+        // 物理ピクセル1:1でオフスクリーンcanvasを重ねる(dpr変換の影響を受けない)。
+        ctx.save();
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.drawImage(allTrailCanvas, 0, 0);
+        ctx.restore();
+      } else if (state.trailMode === "5s") {
         [
           { player: p1, color: COLOR_P1 },
           { player: p2, color: COLOR_P2 },
@@ -263,6 +339,7 @@ window.SQLab.Replay = (function () {
           });
         });
       }
+      // trailMode "off": 軌跡を描画しない
 
       Court.drawLines(ctx, setup.scale);
       if (showTZone && tZone) Court.drawTZone(ctx, setup.scale, tZone);
@@ -317,8 +394,13 @@ window.SQLab.Replay = (function () {
       });
     });
 
-    trailCheckbox.addEventListener("change", function () {
-      state.showTrail = trailCheckbox.checked;
+    trailButtons.forEach(function (btn, idx) {
+      btn.addEventListener("click", function () {
+        state.trailMode = TRAIL_MODES[idx].key;
+        trailButtons.forEach(function (b) { b.classList.remove("tab-btn--active"); });
+        btn.classList.add("tab-btn--active");
+        if (state.trailMode === "all") accumulateAllTrail(state.t);
+      });
     });
 
     seek.addEventListener("input", function () {
@@ -331,6 +413,7 @@ window.SQLab.Replay = (function () {
       clearTimeout(resizeHandler._t);
       resizeHandler._t = setTimeout(function () {
         setupIfNeeded();
+        if (state.trailMode === "all") accumulateAllTrail(state.t);
         drawCoverageStrip(coverageCanvas, canvasWrap.clientWidth || 320, domain, p1, p2, data.analyzed_segments);
         drawFrame();
       }, 150);

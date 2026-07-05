@@ -62,10 +62,11 @@ window.SQLab.Summary = (function () {
     container.appendChild(list);
 
     if (data.unassigned_track_ids && data.unassigned_track_ids.length > 0) {
-      var note = el("p", "notice notice--muted", window.SQLab.t("unassignedNote"));
-      var link = infoIcon("unassigned");
+      // 長文注記は画面から撤去し、短いラベル+guide.html該当節へのⓘ導線のみ残す(v0.5.0)。
+      var note = el("p", "notice notice--muted notice--icon-only");
+      note.appendChild(el("span", null, window.SQLab.t("unassignedShortLabel")));
       note.appendChild(document.createTextNode(" "));
-      note.appendChild(link);
+      note.appendChild(infoIcon("unassigned"));
       container.appendChild(note);
     }
   }

@@ -20535,7 +20535,7 @@
           ]
         }
       },
-      "display_name": "Demo A"
+      "display_name": "__DEMO_A__"
     },
     {
       "id": "P2",
@@ -25289,7 +25289,7 @@
           ]
         }
       },
-      "display_name": "Demo B"
+      "display_name": "__DEMO_B__"
     }
   ]
 }

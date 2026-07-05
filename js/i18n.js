@@ -1,13 +1,15 @@
 // i18n.js — UI文字列の一元管理(EN/JA)。HTMLへの文字列ハードコードを禁止し、
-// 全てここの辞書を経由して表示する。指標名(Distance/Work Rate/T-Dominance/
-// Coverage/Avg Speed)は国際的な用語のため言語によらず英語表記固定。
+// 全てここの辞書を経由して表示する。v0.5.0でJA表示の自然な日本語化を行った
+// (指標名も含め、対訳が指定されたものは翻訳する。国際的に定着した英字表記
+// のみ据え置く場合はコード内コメントで理由を残す)。
 window.SQLab = window.SQLab || {};
 
 window.SQLab.I18N = {
   en: {
     dropPrompt: "Drop your result.json here, or choose a file",
     chooseFile: "Choose File",
-    demoButton: "View Demo Data",
+    loadJsonButton: "Load JSON",
+    demoBannerText: "This is sample data.",
     dataStaysNotice: "Your data stays on this device. Nothing is sent anywhere.",
     errorSchemaMismatch: "Unsupported schema version. Supported: {supported} / Loaded: {loaded}",
     errorMissingField: "Missing required field: {field}",
@@ -28,49 +30,61 @@ window.SQLab.I18N = {
       "Denominator is total main-camera time, not rally time.",
     unassignedNote:
       "Some time ranges could not be confidently assigned to a player and are excluded (shown as unassigned).",
-    footerText: "Analyzed by the Analyzer · Data stays on your device",
-    footerKofi: "Support on Ko-fi",
+    unassignedShortLabel: "Includes unassigned time",
+    footerKofi: "Ko-fi",
+    footerSponsors: "Sponsors",
     footerFeedback: "Feedback",
-    backButton: "Load another file",
     demoBadge: "Demo data (synthetic)",
+    demoPlayerAName: "Player A (demo)",
+    demoPlayerBName: "Player B (demo)",
     analyzerName: "the Analyzer",
     summarySectionTitle: "Summary",
     resetNameLabel: "Reset",
     heatmapSectionTitle: "Analysis",
+    heatmapGroupLabel: "Heatmap",
     modeSideBySide: "Side by Side",
     modeOverlay: "Overlay",
-    modeReplay: "Replay",
+    modeReplay: "Movement Replay",
     tZoneToggleLabel: "Show T-zone",
-    trailToggleLabel: "Show Trail",
+    trailOff: "Off",
+    trailShort: "5s",
+    trailAll: "All",
+    trailLabel: "Trail",
     legendDwellTime: "Dwell time",
     legendP1Only: "P1 only",
     legendP2Only: "P2 only",
     legendBoth: "Both",
     guideBack: "← Back to Squash Laboratory",
     guideTitle: "Guide",
+    guideIntro: "Your data stays on this device — nothing here is ever sent anywhere.",
     guideSummaryIntro: "P1/P2 summary cards show five metrics per player, computed from the loaded result.json.",
     guideDistance: "Total distance covered (m), excluding sudden jumps faster than the speed cap (a tracking glitch, not a real sprint).",
     guideWorkRate: "Distance divided by total main-camera minutes (not rally minutes) — a pace-of-movement figure comparable across matches of different lengths.",
     guideCoverage: "Percentage of court cells (0.5m squares) where the player spent at least a minimum dwell time — how much of the court they actually used.",
     guideAvgSpeed: "Average movement speed (m/s) while on court, i.e. distance divided by total on-court time.",
     guideUnassignedTitle: "Unassigned time ranges",
+    guideUnassignedBody: "Some time ranges could not be confidently assigned to a player (usually because the two players crossed paths) and are excluded rather than guessed at.",
+    guideMainCameraTitle: "Main-camera time",
+    guideMainCameraBody: "The video may briefly cut to a replay or a crowd shot. Those moments are detected automatically and excluded — \"main-camera time\" means the time actually spent on the fixed back-court camera angle used for analysis.",
     guideHeatmapTitle: "Heatmap",
     guideHeatmapBody:
       "Side by Side shows each player's own court with a shared color scale, so the same dwell time always looks equally dark for both. " +
       "Overlay blends both players on one court: red where only P1 spent time, blue where only P2 did, and purple where both did — making each player's exclusive territory visible at a glance.",
-    guideReplayTitle: "Replay",
+    guideReplayTitle: "Movement Replay",
     guideReplayBody:
-      "Replay animates each player's position over time. When a player's position is genuinely missing (not just a normal gap between samples), their dot is hidden rather than frozen in place — the strip below the seek bar shows exactly which time ranges have data for each player, and which ranges were outside the main camera view. " +
+      "Movement Replay animates each player's position over time. When a player's position is genuinely missing (not just a normal gap between samples), their dot is hidden rather than frozen in place — the strip below the seek bar shows exactly which time ranges have data for each player, and which ranges were outside the main camera view. " +
       "Each position is the player's feet, not their head or torso — specifically, the bottom-center of their detection box, projected onto the court.",
     guideSchemaTitle: "Supported data format",
     guideSchemaBody: "This viewer only accepts result.json files matching schema version 0.2. Older or newer incompatible versions will show an error naming both the supported and the loaded version.",
     guideNamesTitle: "Player names",
     guideNamesBody: "Renaming a player only changes what this browser displays (saved locally per video file) — it never modifies the underlying data file.",
+    seeAlsoLabel: "See also:",
   },
   ja: {
     dropPrompt: "result.json をここにドロップ、またはファイルを選択",
     chooseFile: "ファイルを選択",
-    demoButton: "デモデータを見る",
+    loadJsonButton: "ファイルを読み込む",
+    demoBannerText: "これはサンプルデータです。",
     dataStaysNotice: "データはこの端末内でのみ処理されます。外部へは送信されません。",
     errorSchemaMismatch:
       "対応していないスキーマバージョンです。対応バージョン: {supported} / 読み込まれたバージョン: {loaded}",
@@ -82,49 +96,61 @@ window.SQLab.I18N = {
     analyzedFpsLabel: "解析フレームレート",
     mainCameraDurationLabel: "主カメラ区間の合計時間",
     generatorLabel: "生成ツール",
-    metricDistance: "Distance",
-    metricWorkRate: "Work Rate",
-    metricTDominance: "T-Dominance",
-    metricCoverage: "Coverage",
-    metricAvgSpeed: "Avg Speed",
+    // 指標名は自然な日本語表記に統一(v0.5.0)。Work Rateのみ定着した外来語が
+    // 無いため「ワークレート」とし、単位の意味は注記(guide.html)で補う。
+    metricDistance: "移動距離",
+    metricWorkRate: "ワークレート",
+    metricTDominance: "T支配率",
+    metricCoverage: "コートカバー率",
+    metricAvgSpeed: "平均速度",
     tDominanceNote:
       "Tゾーンは楕円({a}m×{b}m、T交点の{offset}m後方が中心)です。" +
       "分母はラリー時間ではなく主カメラ区間の合計時間です。",
     unassignedNote: "一部の時間帯は判定不能(未割当)として除外されています。",
-    footerText: "動画解析ツールによる分析 / データは端末から出ません",
-    footerKofi: "Ko-fiで応援する",
-    footerFeedback: "フィードバック",
-    backButton: "別のファイルを読み込む",
+    unassignedShortLabel: "未割当あり",
+    footerKofi: "Ko-fi",
+    footerSponsors: "スポンサー",
+    footerFeedback: "ご意見・ご要望",
     demoBadge: "デモデータ(完全な合成データ)",
+    demoPlayerAName: "選手A(デモ)",
+    demoPlayerBName: "選手B(デモ)",
     analyzerName: "動画解析ツール",
     summarySectionTitle: "サマリー",
     resetNameLabel: "既定に戻す",
     heatmapSectionTitle: "分析",
+    heatmapGroupLabel: "ヒートマップ",
     modeSideBySide: "Side by Side",
     modeOverlay: "Overlay",
-    modeReplay: "Replay",
+    modeReplay: "動きの軌跡(リプレイ)",
     tZoneToggleLabel: "Tゾーンを表示",
-    trailToggleLabel: "軌跡を表示",
+    trailOff: "オフ",
+    trailShort: "5秒",
+    trailAll: "全て",
+    trailLabel: "軌跡",
     legendDwellTime: "滞在時間",
     legendP1Only: "P1のみ",
     legendP2Only: "P2のみ",
     legendBoth: "両方",
     guideBack: "← Squash Laboratoryへ戻る",
     guideTitle: "ガイド",
+    guideIntro: "データはこの端末内でのみ処理されます。外部へは一切送信されません。",
     guideSummaryIntro: "サマリーカードは、読み込んだresult.jsonから算出したプレイヤーごとの5指標を表示します。",
     guideDistance: "総移動距離(m)。速度上限を超える急激な変位(トラッキングの飛びであり実際のダッシュではない)は除外しています。",
     guideWorkRate: "移動距離 ÷ 主カメラ区間の合計分数(ラリー時間ではない)。試合時間が異なる相手同士でも比較できる「動きのペース」の指標です。",
     guideCoverage: "コートを0.5m四方のセルに分割し、最低滞在時間以上そこにいたセルの割合。実際にコートをどれだけ広く使ったかを示します。",
     guideAvgSpeed: "コート上にいた時間に対する平均移動速度(m/s)。移動距離をコート上滞在時間で割った値です。",
     guideUnassignedTitle: "未割当の時間帯について",
+    guideUnassignedBody: "一部の時間帯は(多くの場合、選手同士が交差したことが原因で)プレイヤーを確信を持って判定できず、推測で埋めるのではなく除外しています。",
+    guideMainCameraTitle: "主カメラ区間について",
+    guideMainCameraBody: "動画中には一時的にリプレイ映像や観客席の映像に切り替わることがあります。これらは自動検出のうえ除外され、「主カメラ区間」は解析に使う背面固定カメラのアングルが実際に映っていた時間を指します。",
     guideHeatmapTitle: "ヒートマップ",
     guideHeatmapBody:
       "Side by Sideは各プレイヤー自身のコートを共通の色スケールで表示するため、同じ滞在時間なら両者とも同じ濃さに見えます。" +
       "Overlayは1枚のコートに両者を重ねて表示します。赤=P1のみ、青=P2のみ、紫=両者ともに滞在した領域を示し、" +
       "それぞれの選手が実質的に支配しているエリアが一目でわかります。",
-    guideReplayTitle: "リプレイ",
+    guideReplayTitle: "動きの軌跡(リプレイ)",
     guideReplayBody:
-      "リプレイは各プレイヤーの位置を時間とともにアニメーション再生します。位置データが本当に存在しない" +
+      "動きの軌跡(リプレイ)は各プレイヤーの位置を時間とともにアニメーション再生します。位置データが本当に存在しない" +
       "(通常のサンプル間隔ではなく実際の欠損)場合は、丸を最後の位置に留めるのではなく非表示にします。" +
       "シークバー下の帯は、各プレイヤーのデータがある時間帯と、主カメラ外だった時間帯を示します。" +
       "位置は頭や胴体ではなく足元(検出枠下辺中央のコート投影点)を基準としています。",
@@ -132,6 +158,7 @@ window.SQLab.I18N = {
     guideSchemaBody: "本ビューアはスキーマバージョン0.2のresult.jsonのみに対応しています。それ以外のバージョンは、対応バージョンと読み込まれたバージョンを併記したエラーを表示します。",
     guideNamesTitle: "プレイヤー名について",
     guideNamesBody: "プレイヤー名の変更は、このブラウザでの表示のみを変更します(動画ファイルごとにローカル保存)。元のデータファイルを書き換えることはありません。",
+    seeAlsoLabel: "関連項目:",
   },
 };
 

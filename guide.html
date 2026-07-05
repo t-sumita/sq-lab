@@ -4,20 +4,25 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Guide — Squash Laboratory</title>
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=0.5.0">
 </head>
 <body>
 
 <header class="site-header">
   <a class="site-header__brand" href="index.html">
+    <img class="site-header__logo" src="assets/subu-pic-header.png" alt=""
+         onerror="this.style.display='none'">
     <span class="site-header__name">Squash Laboratory</span>
   </a>
-  <button id="lang-toggle" class="lang-toggle" type="button">EN</button>
+  <div class="site-header__actions">
+    <button id="lang-toggle" class="lang-toggle" type="button">EN</button>
+  </div>
 </header>
 
 <main id="main" class="guide">
   <a class="guide__back" href="index.html" data-i18n="guideBack"></a>
   <h1 data-i18n="guideTitle"></h1>
+  <p class="notice notice--info" data-i18n="guideIntro"></p>
 
   <section id="summary">
     <h2 data-i18n="summarySectionTitle"></h2>
@@ -32,11 +37,19 @@
   <section id="work-rate">
     <h2 data-i18n="metricWorkRate"></h2>
     <p data-i18n="guideWorkRate"></p>
+    <p class="guide__see-also">
+      <span data-i18n="seeAlsoLabel"></span>
+      <a href="#main-camera" data-i18n="guideMainCameraTitle"></a>
+    </p>
   </section>
 
   <section id="t-dominance">
     <h2 data-i18n="metricTDominance"></h2>
-    <p data-i18n="tDominanceNote"></p>
+    <p></p>
+    <p class="guide__see-also">
+      <span data-i18n="seeAlsoLabel"></span>
+      <a href="#main-camera" data-i18n="guideMainCameraTitle"></a>
+    </p>
   </section>
 
   <section id="coverage">
@@ -51,17 +64,32 @@
 
   <section id="unassigned">
     <h2 data-i18n="guideUnassignedTitle"></h2>
-    <p data-i18n="unassignedNote"></p>
+    <p data-i18n="guideUnassignedBody"></p>
+  </section>
+
+  <section id="main-camera">
+    <h2 data-i18n="guideMainCameraTitle"></h2>
+    <p data-i18n="guideMainCameraBody"></p>
   </section>
 
   <section id="heatmap">
     <h2 data-i18n="guideHeatmapTitle"></h2>
     <p data-i18n="guideHeatmapBody"></p>
+    <p class="guide__see-also">
+      <span data-i18n="seeAlsoLabel"></span>
+      <a href="#t-dominance" data-i18n="metricTDominance"></a>
+    </p>
   </section>
 
   <section id="replay">
     <h2 data-i18n="guideReplayTitle"></h2>
     <p data-i18n="guideReplayBody"></p>
+    <p class="guide__see-also">
+      <span data-i18n="seeAlsoLabel"></span>
+      <a href="#unassigned" data-i18n="guideUnassignedTitle"></a>
+      &middot;
+      <a href="#main-camera" data-i18n="guideMainCameraTitle"></a>
+    </p>
   </section>
 
   <section id="schema">
@@ -78,17 +106,30 @@
 </main>
 
 <footer class="site-footer">
-  <p class="site-footer__tagline" data-i18n="footerText"></p>
   <p class="site-footer__links">
     <span class="site-footer__copyright">&copy; 2026 Subutomo Dev</span>
     <span aria-hidden="true">&middot;</span>
     <a href="https://ko-fi.com/subutomo" target="_blank" rel="noopener" data-i18n="footerKofi"></a>
     <span aria-hidden="true">&middot;</span>
+    <a href="https://github.com/sponsors/t-sumita" target="_blank" rel="noopener" data-i18n="footerSponsors"></a>
+    <span aria-hidden="true">&middot;</span>
     <a href="https://github.com/t-sumita/sq-lab/issues" target="_blank" rel="noopener" data-i18n="footerFeedback"></a>
   </p>
 </footer>
 
-<script src="js/i18n.js"></script>
+<script>
+  window.SUBUTOMO_BADGE_CONFIG = {
+    currentSiteId: 'sq-lab',
+    sitesJsonPath: 'config/subutomo-sites.json',
+    logoPath: './common/assets/logo.png',
+    theme: 'light-bg',
+    privacy: { localStorage: true, analytics: false },
+    onSecretAction: null
+  };
+</script>
+<script src="./assets/subutomo-badge.js?v=0.5.0"></script>
+
+<script src="js/i18n.js?v=0.5.0"></script>
 <script>
   (function () {
     // T-zoneのデフォルト値(the Analyzer v0.5.1 確定値)。guide.htmlは特定の

@@ -1,0 +1,65 @@
+[
+  {
+    "id": "qed-arcade",
+    "title": "QED",
+    "description": "QIX-style territory capture game",
+    "url": "https://t-sumita.github.io/qed-arcade/",
+    "thumb": "https://t-sumita.github.io/spctrl-site/contents/qed/thumb.png",
+    "size": 4,
+    "status": "visible"
+  },
+  {
+    "id": "fisheye-tool",
+    "title": "fisheye-tool",
+    "description": "Fisheye lens image preview tool",
+    "url": "https://t-sumita.github.io/fisheye-tool/",
+    "thumb": "https://t-sumita.github.io/spctrl-site/contents/fisheye-tool/thumb.png",
+    "size": 4,
+    "status": "visible"
+  },
+  {
+    "id": "spctrl-site",
+    "title": "spctrl-site",
+    "description": "Immersive content portal of Subutomo Dev",
+    "url": "https://t-sumita.github.io/spctrl-site/",
+    "thumb": "https://t-sumita.github.io/spctrl-site/contents/spctrl-site/thumb.png",
+    "size": 4,
+    "status": "visible"
+  },
+  {
+    "id": "strata-site",
+    "title": "strata-site",
+    "description": "A visual journey through space, navigated with arrow keys or swipes",
+    "url": "https://t-sumita.github.io/strata-site/",
+    "thumb": "https://t-sumita.github.io/spctrl-site/contents/strata-site/thumb.png",
+    "size": 4,
+    "status": "visible"
+  },
+  {
+    "id": "subuta-site",
+    "title": "subuta-site",
+    "description": "A site where quirky, adorable Subuta characters gather",
+    "url": "https://t-sumita.github.io/subuta-site/",
+    "thumb": "https://t-sumita.github.io/spctrl-site/contents/subuta-site/thumb.png",
+    "size": 4,
+    "status": "visible"
+  },
+  {
+    "id": "ooi-quest",
+    "title": "OOI-QUEST",
+    "description": "A mysterious adventure exploring the landmarks of Oimachi, Tokyo (Japanese only)",
+    "url": "https://t-sumita.github.io/ooi-quest/",
+    "thumb": "https://t-sumita.github.io/spctrl-site/contents/ooi-quest/thumb.png",
+    "size": 4,
+    "status": "visible"
+  },
+  {
+    "id": "voice-idea-mapper",
+    "title": "VOICE IDEA MAPPER",
+    "description": "A voice-driven idea mapping web app",
+    "url": "https://t-sumita.github.io/voice-idea-mapper/",
+    "thumb": "https://t-sumita.github.io/spctrl-site/contents/voice-idea-mapper/thumb.png",
+    "size": 4,
+    "status": "visible"
+  }
+]
